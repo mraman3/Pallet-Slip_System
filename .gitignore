@@ -1,0 +1,76 @@
+# ───────────────────────────────────────────
+# GLOBAL ENVIRONMENT FILES
+# ───────────────────────────────────────────
+.env
+.env.*
+pallets-app/.env
+pallets-ui/.env
+
+
+# ───────────────────────────────────────────
+# NODE MODULES (MONOREPO: IGNORE ALL)
+# ───────────────────────────────────────────
+node_modules/
+pallets-app/node_modules/
+pallets-ui/node_modules/
+
+
+# ───────────────────────────────────────────
+# BUILD OUTPUT (BACKEND + FRONTEND)
+# ───────────────────────────────────────────
+dist/
+build/
+*.tsbuildinfo
+
+# Vite / React outputs
+pallets-ui/dist/
+pallets-ui/dist-ssr/
+pallets-ui/*.local
+
+
+# ───────────────────────────────────────────
+# LOGS
+# ───────────────────────────────────────────
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+
+# ───────────────────────────────────────────
+# PRISMA (DATABASE + BUILDS)
+# ───────────────────────────────────────────
+pallets-app/prisma/*.db
+pallets-app/prisma/*.sqlite
+pallets-app/prisma/migrations/
+node_modules/.prisma/
+
+
+# ───────────────────────────────────────────
+# EDITOR / OS / SYSTEM FILES
+# ───────────────────────────────────────────
+.DS_Store
+Thumbs.db
+
+# VS Code (allow workspace settings)
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+*.swp
+*.swo
+
+
+# ───────────────────────────────────────────
+# TEMPORARY / MISC
+# ───────────────────────────────────────────
+*.tmp
+*.temp
