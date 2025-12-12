@@ -12,6 +12,8 @@ const ClerkAdminSection: React.FC = () => {
   const [search, setSearch] = useState("");
   const [clerks, setClerks] = useState<Clerk[]>([]);
   const [loading, setLoading] = useState(false);
+  const [showInactive, setShowInactive] = useState(false);
+
 
   // add form
   const [addForm, setAddForm] = useState(emptyClerkForm);
@@ -27,17 +29,23 @@ const ClerkAdminSection: React.FC = () => {
   const [editError, setEditError] = useState<string | null>(null);
 
   // ---- load / search clerks ----
-  const fetchClerks = async (searchValue: string) => {
+  const fetchClerks = async (
+    searchValue: string,
+    includeInactive: boolean,
+    signal?: AbortSignal
+  ) => {
     try {
       setLoading(true);
+
       const params = new URLSearchParams();
-      if (searchValue.trim()) {
-        params.set("search", searchValue.trim());
-      }
-      const res = await fetch(`/api/clerks?${params.toString()}`);
+      if (searchValue.trim()) params.set("search", searchValue.trim());
+      if (includeInactive) params.set("includeInactive", "true");
+
+      const res = await fetch(`/api/clerks?${params.toString()}`, { signal });
       const data: Clerk[] = await res.json();
       setClerks(data);
     } catch (err) {
+      if ((err as any).name === "AbortError") return;
       console.error("Error loading clerks", err);
     } finally {
       setLoading(false);
@@ -46,36 +54,24 @@ const ClerkAdminSection: React.FC = () => {
 
   // initial load
   useEffect(() => {
-    void fetchClerks("");
+    const controller = new AbortController();
+    fetchClerks("", showInactive, controller.signal);
+    return () => controller.abort();
   }, []);
 
   // debounce search
   useEffect(() => {
     const controller = new AbortController();
 
-    const run = async () => {
-      try {
-        const params = new URLSearchParams();
-        if (search.trim()) {
-          params.set("search", search.trim());
-        }
-        const res = await fetch(`/api/clerks?${params.toString()}`, {
-          signal: controller.signal,
-        });
-        const data: Clerk[] = await res.json();
-        setClerks(data);
-      } catch (err) {
-        if ((err as any).name === "AbortError") return;
-        console.error("Error searching clerks", err);
-      }
-    };
+    const t = setTimeout(() => {
+      fetchClerks(search, showInactive, controller.signal);
+    }, 300);
 
-    const timeout = setTimeout(run, 300);
     return () => {
       controller.abort();
-      clearTimeout(timeout);
+      clearTimeout(t);
     };
-  }, [search]);
+  }, [search, showInactive]);
 
   // ---- add handlers ----
   const handleAddChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -114,7 +110,7 @@ const ClerkAdminSection: React.FC = () => {
       } else {
         setAddMessage(`Clerk "${data.name}" created.`);
         setAddForm(emptyClerkForm);
-        void fetchClerks(search);
+        void fetchClerks(search, showInactive);
       }
     } catch (err) {
       console.error("Error creating clerk", err);
@@ -177,7 +173,7 @@ const ClerkAdminSection: React.FC = () => {
         setEditError(data.error || "Failed to update clerk.");
       } else {
         setEditMessage(`Clerk "${data.name}" updated.`);
-        void fetchClerks(search);
+        void fetchClerks(search, showInactive);
       }
     } catch (err) {
       console.error("Error updating clerk", err);
@@ -187,10 +183,33 @@ const ClerkAdminSection: React.FC = () => {
     }
   };
 
+  // ---- Active handlers ----
+  const toggleClerkActive = async (clerkId: number, makeActive: boolean) => {
+    try {
+      const res = await fetch(
+        `/api/clerks/${clerkId}/${makeActive ? "enable" : "disable"}`,
+        { method: "PATCH" }
+      );
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(data.error || "Failed to update clerk status.");
+        return;
+      }
+
+      // refresh list (keeps your search + showInactive filter)
+      await fetchClerks(search, showInactive);
+    } catch (err) {
+      console.error("Error toggling clerk active", err);
+      alert("Unexpected error updating clerk status.");
+    }
+  };
+
   return (
     <div>
-      <h3 style={{ marginBottom: 0}}>Clerks</h3>
-      <p style={{ marginBottom: 15, marginTop: 0}}>
+      <h3 style={{ marginBottom: 0 }}>Clerks</h3>
+      <p style={{ marginBottom: 15, marginTop: 0 }}>
         Manage the list of clerks that can be assigned to slips.
       </p>
 
@@ -344,8 +363,23 @@ const ClerkAdminSection: React.FC = () => {
 
         {/* Right: clerk list */}
         <div style={{ flex: 1, minWidth: 300 }}>
-          <h4>Existing Clerks</h4>
-
+          <div style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+          >
+            <h4>Existing Clerks</h4>
+            <label style={{ fontSize: 14 }}>
+              <input
+                type="checkbox"
+                checked={showInactive}
+                onChange={(e) => setShowInactive(e.target.checked)}
+                style={{ marginRight: 6 }}
+              />
+              Show inactive
+            </label>
+          </div>
           {loading ? (
             <p>Loading clerks...</p>
           ) : clerks.length === 0 ? (
@@ -392,11 +426,23 @@ const ClerkAdminSection: React.FC = () => {
                     >
                       Status
                     </th>
+                    <th
+                      style={{
+                        borderBottom: "1px solid #ccc",
+                        textAlign: "center",
+                        padding: "4px 2px",
+                        position: "sticky",
+                        top: 0,
+                        background: "#486882",
+                      }}
+                    >
+                      Actions
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
                   {clerks.map((c) => (
-                    <tr key={c.id}>
+                    <tr key={c.id} style={{ opacity: c.active ? 1 : 0.6 }}>
                       <td
                         style={{
                           borderBottom: "1px solid #eee",
@@ -405,13 +451,42 @@ const ClerkAdminSection: React.FC = () => {
                       >
                         {c.name}
                       </td>
+
                       <td
                         style={{
                           borderBottom: "1px solid #eee",
                           padding: "4px 2px",
                         }}
                       >
-                        {c.active === false ? "Inactive" : "Active"}
+                        {c.active ? "Active" : "Inactive"}
+                      </td>
+
+                      <td
+                        style={{
+                          borderBottom: "1px solid #eee",
+                          padding: "4px",
+                          textAlign: "right",
+                          whiteSpace: "nowrap",
+                          width: "0%"
+                        }}
+                      >
+                        {c.active ? (
+                          <button
+                            type="button"
+                            onClick={() => toggleClerkActive(c.id, false)}
+                            style={{ cursor: "pointer" }}
+                          >
+                            Disable
+                          </button>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => toggleClerkActive(c.id, true)}
+                            style={{ cursor: "pointer" }}
+                          >
+                            Enable
+                          </button>
+                        )}
                       </td>
                     </tr>
                   ))}

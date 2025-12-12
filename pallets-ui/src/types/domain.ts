@@ -7,6 +7,7 @@ export type Client = {
   city: string;
   province: string;
   postal: string;
+  active: boolean;
 };
 
 export type ClientAddress = {
@@ -17,16 +18,20 @@ export type ClientAddress = {
   city: string;
   province: string;
   postal: string;
+  active: boolean;
 };
 
 export type Clerk = {
   id: number;
   name: string;
+  active: boolean;
 };
 
 export type PalletType = {
   id: number;
   name: string;
+  active: boolean;
+
 };
 
 export type SlipItemInput = {

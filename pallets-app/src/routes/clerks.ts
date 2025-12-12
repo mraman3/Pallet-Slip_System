@@ -13,14 +13,19 @@ const router = Router();
 router.get("/", async (req: Request, res: Response) => {
   try {
     const search = (req.query.search as string) || "";
+	const includeInactive = req.query.includeInactive === "true" || req.query.includeInactive === "1";
+	
+    const where: Prisma.ClerkWhereInput = {};
+	
+	// default: only active
+    if (!includeInactive) {
+      where.active = true;
+    }
 
-    const where: Prisma.ClerkWhereInput = {
-      active: true,
-    };
-
-    if (search) {
+    // optional search filter
+    if (search.trim()) {
       where.name = {
-        contains: search,
+        contains: search.trim(),
         mode: "insensitive",
       };
     }
