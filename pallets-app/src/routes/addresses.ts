@@ -16,7 +16,7 @@ router.get("/", async (req: Request, res: Response) => {
     const clientId = Number(params.clientId);
     const search = (req.query.search as string) || "";
     const includeInactive = req.query.includeInactive === "true" || req.query.includeInactive === "1";
-    
+
     if (Number.isNaN(clientId)) {
       return res.status(400).json({ error: "Invalid clientId" });
     }
@@ -144,11 +144,17 @@ router.put("/:id", async (req: Request, res: Response) => {
  */
 router.patch("/:id/disable", async (req: Request, res: Response) => {
   try {
-    const params = req.params as { id?: string };
-    const addressId = Number(params.id);
+    const params = req.params as { clientId?: string; id?: string };
+    const cid = Number(params.clientId)
+    const addressId = Number(params.id)
 
     if (Number.isNaN(addressId)) {
       return res.status(400).json({ error: "Invalid address id" });
+    }
+
+    const existing = await prisma.clientAddress.findUnique({ where: { id: addressId } });
+    if (!existing || existing.client_id !== cid) {
+      return res.status(404).json({ error: "Address not found for this client" });
     }
 
     const updated = await prisma.clientAddress.update({
@@ -169,11 +175,17 @@ router.patch("/:id/disable", async (req: Request, res: Response) => {
  */
 router.patch("/:id/enable", async (req: Request, res: Response) => {
   try {
-    const params = req.params as { id?: string };
-    const addressId = Number(params.id);
+    const params = req.params as { clientId?: string; id?: string };
+    const cid = Number(params.clientId)
+    const addressId = Number(params.id)
 
     if (Number.isNaN(addressId)) {
       return res.status(400).json({ error: "Invalid address id" });
+    }
+
+    const existing = await prisma.clientAddress.findUnique({ where: { id: addressId } });
+    if (!existing || existing.client_id !== cid) {
+      return res.status(404).json({ error: "Address not found for this client" });
     }
 
     const updated = await prisma.clientAddress.update({
