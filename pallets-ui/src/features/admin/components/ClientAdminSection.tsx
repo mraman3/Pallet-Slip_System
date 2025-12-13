@@ -123,7 +123,7 @@ const ClientAdminSection: React.FC = () => {
         setAddMessage(`Client "${data.name}" created.`);
         setAddForm(emptyForm);
         // refresh the sidebar list
-        await fetchClients(editSearch, showInactive);
+        await fetchClients("", showInactive);
       }
     } catch (err) {
       console.error("Error creating client", err);
@@ -201,7 +201,7 @@ const ClientAdminSection: React.FC = () => {
       } else {
         setEditMessage(`Client "${data.name}" updated.`);
         // refresh sidebar and maybe editResults
-        fetchClients(editSearch, showInactive);
+        await fetchClients("", showInactive);
       }
     } catch (err) {
       console.error("Error updating client", err);
@@ -227,7 +227,7 @@ const ClientAdminSection: React.FC = () => {
       }
 
       // refresh sidebar list
-      await fetchClients(editSearch, showInactive);
+      await fetchClients("", showInactive);
     } catch (err) {
       console.error("Error toggling client active", err);
       alert("Unexpected error updating client status.");
