@@ -11,21 +11,24 @@ const router = Router();
 router.get("/", async (req, res) => {
   try {
     const search = (req.query.search as string) || "";
+    const includeInactive = req.query.includeInactive === "true" || req.query.includeInactive === "1";
 
-    const where: Prisma.ClientWhereInput = {
-      active: true, // still only return active clients
-    };
+    const where: Prisma.ClientWhereInput = {};
 
-    if (search) {
+    if (!includeInactive) {
+      where.active = true;
+    }
+
+    if (search.trim()) {
       where.name = {
-        contains: search,
+        contains: search.trim(),
         mode: "insensitive",
       };
     }
 
     const clients = await prisma.client.findMany({
       where,
-      orderBy: { name: "asc" },
+      orderBy: [{ active: "desc" }, { name: "asc" }],
       take: 50, // limit for dropdown
     });
 
