@@ -55,7 +55,7 @@ const ClerkAdminSection: React.FC = () => {
   // initial load
   useEffect(() => {
     const controller = new AbortController();
-    fetchClerks("", showInactive, controller.signal);
+    fetchClerks("", false, controller.signal);
     return () => controller.abort();
   }, []);
 

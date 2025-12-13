@@ -55,7 +55,7 @@ const PalletAdminSection: React.FC = () => {
   // initial load
   useEffect(() => {
     const controller = new AbortController();
-    fetchPallets("", showInactive, controller.signal);
+    fetchPallets("", false, controller.signal);
     return () => controller.abort();
   }, []);
 
@@ -194,15 +194,15 @@ const PalletAdminSection: React.FC = () => {
       const data = await res.json();
 
       if (!res.ok) {
-        alert(data.error || "Failed to update clerk status.");
+        alert(data.error || "Failed to update pallet type status.");
         return;
       }
 
       // refresh list (keeps your search + showInactive filter)
       await fetchPallets(palletSearch, showInactive);
     } catch (err) {
-      console.error("Error toggling clerk active", err);
-      alert("Unexpected error updating clerk status.");
+      console.error("Error toggling palletType active", err);
+      alert("Unexpected error updating pallet type status.");
     }
   };
 
