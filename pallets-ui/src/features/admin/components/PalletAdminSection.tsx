@@ -13,6 +13,7 @@ const PalletAdminSection: React.FC = () => {
   const [palletSearch, setPalletSearch] = useState("");
   const [pallets, setPallets] = useState<PalletType[]>([]);
   const [loading, setLoading] = useState(false);
+  const [showInactive, setShowInactive] = useState(false);
 
   // add form state
   const [addForm, setAddForm] = useState(emptyPalletForm);
@@ -28,18 +29,23 @@ const PalletAdminSection: React.FC = () => {
   const [editError, setEditError] = useState<string | null>(null);
 
   // ---- load / search pallet types ----
-  const fetchPallets = async (search: string) => {
+  const fetchPallets = async (
+    searchValue: string,
+    includeInactive: boolean,
+    signal?: AbortSignal
+  ) => {
     try {
       setLoading(true);
-      const params = new URLSearchParams();
-      if (search.trim()) {
-        params.set("search", search.trim());
-      }
 
-      const res = await fetch(`/api/pallet-types?${params.toString()}`);
+      const params = new URLSearchParams();
+      if (searchValue.trim()) params.set("search", searchValue.trim());
+      if (includeInactive) params.set("includeInactive", "true");
+
+      const res = await fetch(`/api/pallet-types?${params.toString()}`, { signal });
       const data: PalletType[] = await res.json();
       setPallets(data);
     } catch (err) {
+      if ((err as any).name === "AbortError") return;
       console.error("Error loading pallet types", err);
     } finally {
       setLoading(false);
@@ -48,36 +54,24 @@ const PalletAdminSection: React.FC = () => {
 
   // initial load
   useEffect(() => {
-    void fetchPallets("");
+    const controller = new AbortController();
+    fetchPallets("", showInactive, controller.signal);
+    return () => controller.abort();
   }, []);
 
   // search debounce
   useEffect(() => {
     const controller = new AbortController();
 
-    const runSearch = async () => {
-      try {
-        const params = new URLSearchParams();
-        if (palletSearch.trim()) {
-          params.set("search", palletSearch.trim());
-        }
-        const res = await fetch(`/api/pallet-types?${params.toString()}`, {
-          signal: controller.signal,
-        });
-        const data: PalletType[] = await res.json();
-        setPallets(data);
-      } catch (err) {
-        if ((err as any).name === "AbortError") return;
-        console.error("Error searching pallet types", err);
-      }
-    };
+    const t = setTimeout(() => {
+      fetchPallets(palletSearch, showInactive, controller.signal);
+    }, 300);
 
-    const timeout = setTimeout(runSearch, 300);
     return () => {
       controller.abort();
-      clearTimeout(timeout);
+      clearTimeout(t);
     };
-  }, [palletSearch]);
+  }, [palletSearch, showInactive]);
 
   // ---- add handlers ----
   const handleAddChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -116,7 +110,7 @@ const PalletAdminSection: React.FC = () => {
       } else {
         setAddMessage(`Pallet type "${data.name}" created.`);
         setAddForm(emptyPalletForm);
-        void fetchPallets(palletSearch);
+        void fetchPallets(palletSearch, showInactive);
       }
     } catch (err) {
       console.error("Error creating pallet type", err);
@@ -179,7 +173,7 @@ const PalletAdminSection: React.FC = () => {
         setEditError(data.error || "Failed to update pallet type.");
       } else {
         setEditMessage(`Pallet type "${data.name}" updated.`);
-        void fetchPallets(palletSearch);
+        void fetchPallets(palletSearch, showInactive);
       }
     } catch (err) {
       console.error("Error updating pallet type", err);
@@ -189,10 +183,33 @@ const PalletAdminSection: React.FC = () => {
     }
   };
 
+  // ---- Active handlers ----
+  const togglePalletActive = async (palletId: number, makeActive: boolean) => {
+    try {
+      const res = await fetch(
+        `/api/pallet-types/${palletId}/${makeActive ? "enable" : "disable"}`,
+        { method: "PATCH" }
+      );
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(data.error || "Failed to update clerk status.");
+        return;
+      }
+
+      // refresh list (keeps your search + showInactive filter)
+      await fetchPallets(palletSearch, showInactive);
+    } catch (err) {
+      console.error("Error toggling clerk active", err);
+      alert("Unexpected error updating clerk status.");
+    }
+  };
+
   return (
     <div>
       <h3 style={{ marginBottom: 0 }}>Pallet Types</h3>
-      <p style={{ marginBottom: 12, marginTop: 0}}>
+      <p style={{ marginBottom: 12, marginTop: 0 }}>
         Manage the list of pallet types available on slips.
       </p>
 
@@ -347,8 +364,23 @@ const PalletAdminSection: React.FC = () => {
 
         {/* Right: pallet type list */}
         <div style={{ flex: 1, minWidth: 300 }}>
-          <h4>Existing Pallet Types</h4>
-
+          <div style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+          >
+            <h4>Existing Pallet Types</h4>
+            <label style={{ fontSize: 14 }}>
+              <input
+                type="checkbox"
+                checked={showInactive}
+                onChange={(e) => setShowInactive(e.target.checked)}
+                style={{ marginRight: 6 }}
+              />
+              Show inactive
+            </label>
+          </div>
           {loading ? (
             <p>Loading pallet types...</p>
           ) : pallets.length === 0 ? (
@@ -383,11 +415,35 @@ const PalletAdminSection: React.FC = () => {
                     >
                       Name / Description
                     </th>
+                    <th
+                      style={{
+                        borderBottom: "1px solid #ccc",
+                        textAlign: "left",
+                        padding: "4px 2px",
+                        position: "sticky",
+                        top: 0,
+                        background: "#486882",
+                      }}
+                    >
+                      Status
+                    </th>
+                    <th
+                      style={{
+                        borderBottom: "1px solid #ccc",
+                        textAlign: "center",
+                        padding: "4px 2px",
+                        position: "sticky",
+                        top: 0,
+                        background: "#486882",
+                      }}
+                    >
+                      Actions
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
                   {pallets.map((p) => (
-                    <tr key={p.id}>
+                    <tr key={p.id} style={{ opacity: p.active ? 1 : 0.6 }}>
                       <td
                         style={{
                           borderBottom: "1px solid #eee",
@@ -395,6 +451,43 @@ const PalletAdminSection: React.FC = () => {
                         }}
                       >
                         {p.name}
+                      </td>
+
+                      <td
+                        style={{
+                          borderBottom: "1px solid #eee",
+                          padding: "4px 2px",
+                        }}
+                      >
+                        {p.active ? "Active" : "Inactive"}
+                      </td>
+
+                      <td
+                        style={{
+                          borderBottom: "1px solid #eee",
+                          padding: "4px",
+                          textAlign: "right",
+                          whiteSpace: "nowrap",
+                          width: "0%"
+                        }}
+                      >
+                        {p.active ? (
+                          <button
+                            type="button"
+                            onClick={() => togglePalletActive(p.id, false)}
+                            style={{ cursor: "pointer" }}
+                          >
+                            Disable
+                          </button>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => togglePalletActive(p.id, true)}
+                            style={{ cursor: "pointer" }}
+                          >
+                            Enable
+                          </button>
+                        )}
                       </td>
                     </tr>
                   ))}

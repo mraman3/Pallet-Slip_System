@@ -13,21 +13,26 @@ const router = Router();
 router.get("/", async (req: Request, res: Response) => {
   try {
     const search = (req.query.search as string) || "";
+    const includeInactive =
+      req.query.includeInactive === "true" || req.query.includeInactive === "1";
 
-    const where: Prisma.PalletTypeWhereInput = {
-      active: true,
-    };
+    const where: Prisma.PalletTypeWhereInput = {};
 
-    if (search) {
+    // only filter active when inactive are NOT requested
+    if (!includeInactive) {
+      where.active = true;
+    }
+
+    if (search.trim()) {
       where.name = {
-        contains: search,
+        contains: search.trim(),
         mode: "insensitive",
       };
     }
 
     const palletTypes = await prisma.palletType.findMany({
       where,
-      orderBy: { name: "asc" },
+      orderBy: [{ active: "desc" }, { name: "asc" }],
       take: 50,
     });
 
@@ -37,6 +42,7 @@ router.get("/", async (req: Request, res: Response) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
+
 
 /**
  * POST /api/pallet-types
