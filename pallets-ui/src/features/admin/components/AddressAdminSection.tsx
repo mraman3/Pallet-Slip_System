@@ -1,4 +1,3 @@
-// src/features/admin/components/AddressAdminSection.tsx
 import React, { useEffect, useState } from "react";
 import type { Client, ClientAddress } from "../../../types/domain";
 
@@ -11,95 +10,141 @@ const emptyAddressForm = {
 };
 
 const AddressAdminSection: React.FC = () => {
-  // which tab is active: "add" or "edit"
   const [activeTab, setActiveTab] = useState<"add" | "edit">("add");
 
-  // client search + select
+  // --- client selection (required) ---
   const [clientSearch, setClientSearch] = useState("");
-  const [clientResults, setClientResults] = useState<Client[]>([]);
+  const [clients, setClients] = useState<Client[]>([]);
   const [selectedClientId, setSelectedClientId] = useState<number | "">("");
 
-  // addresses for selected client
+  // --- addresses list (single source of truth) ---
+  const [addressSearch, setAddressSearch] = useState("");
   const [addresses, setAddresses] = useState<ClientAddress[]>([]);
+  const [showInactive, setShowInactive] = useState(false);
   const [loadingAddresses, setLoadingAddresses] = useState(false);
 
-  // add address form
+  // --- add ---
   const [addForm, setAddForm] = useState(emptyAddressForm);
   const [addSubmitting, setAddSubmitting] = useState(false);
   const [addMessage, setAddMessage] = useState<string | null>(null);
   const [addError, setAddError] = useState<string | null>(null);
 
-  // edit address selection + form
+  // --- edit ---
   const [selectedAddressId, setSelectedAddressId] = useState<number | "">("");
   const [editForm, setEditForm] = useState(emptyAddressForm);
   const [editSubmitting, setEditSubmitting] = useState(false);
   const [editMessage, setEditMessage] = useState<string | null>(null);
   const [editError, setEditError] = useState<string | null>(null);
 
-  // ---- client search (same style as other screens) ----
+  // -------------------------
+  // CLIENT SEARCH (dropdown)
+  // -------------------------
+  const fetchClients = async (searchValue: string, signal?: AbortSignal) => {
+    try {
+      const params = new URLSearchParams();
+      if (searchValue.trim()) params.set("search", searchValue.trim());
+      // For admin screens it’s useful to allow finding inactive clients too:
+      params.set("includeInactive", "true");
+
+      const res = await fetch(`/api/clients?${params.toString()}`, { signal });
+      const data: Client[] = await res.json();
+      setClients(data);
+    } catch (e) {
+      if ((e as any).name === "AbortError") return;
+      console.error("Error fetching clients", e);
+    }
+  };
+
+  // initial client load
   useEffect(() => {
     const controller = new AbortController();
+    fetchClients("", controller.signal);
+    return () => controller.abort();
+  }, []);
 
-    const searchClients = async () => {
-      try {
-        const params = new URLSearchParams();
-        if (clientSearch.trim()) {
-          params.set("search", clientSearch.trim());
-        }
-
-        const res = await fetch(`/api/clients?${params.toString()}`, {
-          signal: controller.signal,
-        });
-        const data: Client[] = await res.json();
-        setClientResults(data);
-      } catch (err) {
-        if ((err as any).name === "AbortError") return;
-        console.error("Error searching clients for addresses", err);
-      }
-    };
-
-    const timeout = setTimeout(searchClients, 300);
+  // debounce client search
+  useEffect(() => {
+    const controller = new AbortController();
+    const t = setTimeout(() => {
+      fetchClients(clientSearch, controller.signal);
+    }, 300);
     return () => {
       controller.abort();
-      clearTimeout(timeout);
+      clearTimeout(t);
     };
   }, [clientSearch]);
 
-  // ---- load addresses when a client is selected ----
-  const loadAddressesForClient = async (clientId: number) => {
+  // -------------------------
+  // ADDRESS LIST (by client)
+  // -------------------------
+  const fetchAddresses = async (
+    clientId: number,
+    searchValue: string,
+    includeInactive: boolean,
+    signal?: AbortSignal
+  ) => {
     try {
       setLoadingAddresses(true);
-      const res = await fetch(`/api/clients/${clientId}/addresses`);
+
+      const params = new URLSearchParams();
+      if (searchValue.trim()) params.set("search", searchValue.trim());
+      if (includeInactive) params.set("includeInactive", "true");
+
+      const res = await fetch(
+        `/api/clients/${clientId}/addresses?${params.toString()}`,
+        { signal }
+      );
+
       const data: ClientAddress[] = await res.json();
       setAddresses(data);
-
-      // reset selection and edit form
-      setSelectedAddressId("");
-      setEditForm(emptyAddressForm);
-    } catch (err) {
-      console.error("Error loading addresses", err);
+    } catch (e) {
+      if ((e as any).name === "AbortError") return;
+      console.error("Error fetching addresses", e);
     } finally {
       setLoadingAddresses(false);
     }
   };
 
+  // whenever client changes: reset address state + load addresses
   useEffect(() => {
-    if (!selectedClientId) {
-      setAddresses([]);
-      setSelectedAddressId("");
-      setEditForm(emptyAddressForm);
-      return;
-    }
-    void loadAddressesForClient(selectedClientId);
+    setAddresses([]);
+    setAddressSearch("");
+    setSelectedAddressId("");
+    setEditForm(emptyAddressForm);
+
+    if (!selectedClientId) return;
+
+    const controller = new AbortController();
+    fetchAddresses(Number(selectedClientId), "", showInactive, controller.signal);
+    return () => controller.abort();
   }, [selectedClientId]);
 
-  // ---- add address handlers ----
+  // debounce address search + showInactive
+  useEffect(() => {
+    if (!selectedClientId) return;
+    const controller = new AbortController();
+
+    const t = setTimeout(() => {
+      fetchAddresses(
+        Number(selectedClientId),
+        addressSearch,
+        showInactive,
+        controller.signal
+      );
+    }, 300);
+
+    return () => {
+      controller.abort();
+      clearTimeout(t);
+    };
+  }, [addressSearch, showInactive, selectedClientId]);
+
+  // -------------------------
+  // ADD handlers
+  // -------------------------
   const handleAddChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setAddForm((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setAddForm((p) => ({ ...p, [name]: value }));
   };
 
   const handleAddSubmit = async (e: React.FormEvent) => {
@@ -117,8 +162,8 @@ const AddressAdminSection: React.FC = () => {
 
       const { location_name, address, city, province, postal } = addForm;
 
-      if (!address || !city || !province || !postal) {
-        setAddError("Address, city, province, and postal are required.");
+      if (!location_name || !address || !city || !province || !postal) {
+        setAddError("All fields are required.");
         setAddSubmitting(false);
         return;
       }
@@ -127,7 +172,7 @@ const AddressAdminSection: React.FC = () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          location_name: location_name || null,
+          location_name,
           address,
           city,
           province,
@@ -140,35 +185,28 @@ const AddressAdminSection: React.FC = () => {
       if (!res.ok) {
         setAddError(data.error || "Failed to create address.");
       } else {
-        setAddMessage("Address added.");
+        setAddMessage(`Address "${data.location_name}" created.`);
         setAddForm(emptyAddressForm);
-        if (selectedClientId) {
-          void loadAddressesForClient(selectedClientId);
-        }
+
+        await fetchAddresses(Number(selectedClientId), addressSearch, showInactive);
       }
-    } catch (err) {
-      console.error("Error creating address", err);
+    } catch (e) {
+      console.error("Error creating address", e);
       setAddError("Unexpected error creating address.");
     } finally {
       setAddSubmitting(false);
     }
   };
 
-  // ---- edit address handlers ----
-  const handleEditChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setEditForm((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  // when an address is selected, populate edit form
+  // -------------------------
+  // EDIT: populate form
+  // -------------------------
   useEffect(() => {
     if (!selectedAddressId) {
       setEditForm(emptyAddressForm);
       return;
     }
+
     const found = addresses.find((a) => a.id === selectedAddressId);
     if (found) {
       setEditForm({
@@ -181,6 +219,11 @@ const AddressAdminSection: React.FC = () => {
     }
   }, [selectedAddressId, addresses]);
 
+  const handleEditChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setEditForm((p) => ({ ...p, [name]: value }));
+  };
+
   const handleEditSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setEditSubmitting(true);
@@ -188,6 +231,11 @@ const AddressAdminSection: React.FC = () => {
     setEditError(null);
 
     try {
+      if (!selectedClientId) {
+        setEditError("Please select a client first.");
+        setEditSubmitting(false);
+        return;
+      }
       if (!selectedAddressId) {
         setEditError("Please select an address to edit.");
         setEditSubmitting(false);
@@ -196,64 +244,82 @@ const AddressAdminSection: React.FC = () => {
 
       const { location_name, address, city, province, postal } = editForm;
 
-      if (!address || !city || !province || !postal) {
-        setEditError("Address, city, province, and postal are required.");
+      if (!location_name || !address || !city || !province || !postal) {
+        setEditError("All fields are required.");
         setEditSubmitting(false);
         return;
       }
 
-      const res = await fetch(`/api/clients/${selectedClientId}/addresses/${selectedAddressId}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          location_name: location_name || null,
-          address,
-          city,
-          province,
-          postal,
-        }),
-      });
+      const res = await fetch(
+        `/api/clients/${selectedClientId}/addresses/${selectedAddressId}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            location_name,
+            address,
+            city,
+            province,
+            postal,
+          }),
+        }
+      );
 
       const data = await res.json();
 
       if (!res.ok) {
         setEditError(data.error || "Failed to update address.");
       } else {
-        setEditMessage("Address updated.");
-        if (selectedClientId) {
-          void loadAddressesForClient(selectedClientId);
-        }
+        setEditMessage(`Address "${data.location_name}" updated.`);
+        await fetchAddresses(Number(selectedClientId), addressSearch, showInactive);
       }
-    } catch (err) {
-      console.error("Error updating address", err);
+    } catch (e) {
+      console.error("Error updating address", e);
       setEditError("Unexpected error updating address.");
     } finally {
       setEditSubmitting(false);
     }
   };
 
+  // -------------------------
+  // Enable/Disable
+  // -------------------------
+  const toggleAddressActive = async (addressId: number, makeActive: boolean) => {
+    try {
+      if (!selectedClientId) return;
+
+      const res = await fetch(
+        `/api/clients/${selectedClientId}/addresses/${addressId}/${makeActive ? "enable" : "disable"
+        }`,
+        { method: "PATCH" }
+      );
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(data.error || "Failed to update address status.");
+        return;
+      }
+
+      await fetchAddresses(Number(selectedClientId), addressSearch, showInactive);
+    } catch (e) {
+      console.error("Error toggling address active", e);
+      alert("Unexpected error updating address status.");
+    }
+  };
+
   return (
     <div>
       <h3 style={{ marginBottom: 0 }}>Ship-To Addresses</h3>
-      <p style={{ marginBottom: 15, marginTop: 0}}>
-        Select a client to manage its Ship-To locations.
+      <p style={{ marginBottom: 12, marginTop: 0 }}>
+        Select a client, then manage that client’s shipping locations.
       </p>
 
-      {/* Client picker */}
-      <div
-        style={{
-          display: "flex",
-          gap: 16,
-          alignItems: "flex-end",
-          marginBottom: 16,
-        }}
-      >
-        <div style={{ flex: 2 }}>
-          <label style={{ display: "block", marginBottom: 4 }}>
-            Search client
-          </label>
+      {/* Client selector */}
+      <div style={{ display: "flex", justifyContent: "flex-start", gap: "5%", width: "100%" }}>
+        <div style={{ marginBottom: 12, width: "100%" }}>
+          <label style={{ display: "block", marginBottom: 4 }}>Search client</label>
           <input
-            type="text"
             value={clientSearch}
             onChange={(e) => setClientSearch(e.target.value)}
             placeholder="Type client name..."
@@ -261,34 +327,41 @@ const AddressAdminSection: React.FC = () => {
           />
         </div>
 
-        <div style={{ flex: 2 }}>
-          <label style={{ display: "block", marginBottom: 4 }}>
-            Select client
-          </label>
+        <div style={{ marginBottom: 12, width: "100%" }}>
+          <label style={{ display: "block", marginBottom: 4 }}>Select client</label>
           <select
             value={selectedClientId}
             onChange={(e) =>
-              setSelectedClientId(
-                e.target.value ? Number(e.target.value) : ""
-              )
+              setSelectedClientId(e.target.value ? Number(e.target.value) : "")
             }
             style={{ width: "100%" }}
           >
             <option value="">-- Select --</option>
-            {clientResults.map((c) => (
+            {clients.map((c) => (
               <option key={c.id} value={c.id}>
-                {c.name} — {c.city}, {c.province}
+                {c.name} {!c.active ? "(inactive)" : ""}
               </option>
             ))}
           </select>
         </div>
       </div>
+      {/* Address search (only after client selected) */}
+      <div style={{ marginBottom: 12 }}>
+        <label style={{ display: "block", marginBottom: 4 }}>
+          Search addresses
+        </label>
+        <input
+          value={addressSearch}
+          onChange={(e) => setAddressSearch(e.target.value)}
+          placeholder='Search location name / street / city...'
+          style={{ width: "100%" }}
+          disabled={!selectedClientId}
+        />
+      </div>
 
-      {/* Layout: left = forms (tabbed), right = list */}
-      <div style={{ display: "flex", gap: 24, alignItems: "flex-start" }}>
-        {/* Left column: tabs + forms */}
+      <div style={{ display: "flex", gap: 24, alignItems: "center"}}>
+        {/* Left: tabs + forms */}
         <div style={{ flex: 1, minWidth: 320 }}>
-          {/* sub-tabs */}
           <div style={{ marginBottom: 12, display: "flex", gap: 8 }}>
             <button
               type="button"
@@ -296,8 +369,7 @@ const AddressAdminSection: React.FC = () => {
               style={{
                 padding: "6px 12px",
                 borderRadius: 4,
-                border:
-                  activeTab === "add" ? "2px solid #333" : "1px solid #ccc",
+                border: activeTab === "add" ? "2px solid #333" : "1px solid #ccc",
                 backgroundColor: activeTab === "add" ? "#a6d2f5" : "#486882",
                 cursor: "pointer",
               }}
@@ -310,8 +382,7 @@ const AddressAdminSection: React.FC = () => {
               style={{
                 padding: "6px 12px",
                 borderRadius: 4,
-                border:
-                  activeTab === "edit" ? "2px solid #333" : "1px solid #ccc",
+                border: activeTab === "edit" ? "2px solid #333" : "1px solid #ccc",
                 backgroundColor: activeTab === "edit" ? "#a6d2f5" : "#486882",
                 cursor: "pointer",
               }}
@@ -321,43 +392,27 @@ const AddressAdminSection: React.FC = () => {
           </div>
 
           {activeTab === "add" ? (
-            <section>
-              <h4>Add Ship - To Address For Client</h4>
-
-              {addMessage && (
-                <div style={{ marginBottom: 8, color: "green" }}>
-                  {addMessage}
-                </div>
-              )}
-              {addError && (
-                <div style={{ marginBottom: 8, color: "red" }}>
-                  {addError}
-                </div>
-              )}
+            <>
+              <h4>Add Address</h4>
+              {addMessage && <div style={{ color: "green", marginBottom: 8 }}>{addMessage}</div>}
+              {addError && <div style={{ color: "red", marginBottom: 8 }}>{addError}</div>}
 
               <form onSubmit={handleAddSubmit}>
                 <div style={{ marginBottom: 8 }}>
-                  <label style={{ display: "block", marginBottom: 4 }}>
-                    Location Name (optional)
-                  </label>
+                  <label style={{ display: "block", marginBottom: 4 }}>Location Name</label>
                   <input
                     name="location_name"
-                    type="text"
                     value={addForm.location_name}
                     onChange={handleAddChange}
                     style={{ width: "100%" }}
                     disabled={!selectedClientId}
-                    placeholder="e.g. Main Yard, Plant #2"
                   />
                 </div>
 
                 <div style={{ marginBottom: 8 }}>
-                  <label style={{ display: "block", marginBottom: 4 }}>
-                    Address
-                  </label>
+                  <label style={{ display: "block", marginBottom: 4 }}>Address</label>
                   <input
                     name="address"
-                    type="text"
                     value={addForm.address}
                     onChange={handleAddChange}
                     style={{ width: "100%" }}
@@ -365,106 +420,68 @@ const AddressAdminSection: React.FC = () => {
                   />
                 </div>
 
-                <div
-                  style={{
-                    display: "flex",
-                    gap: 8,
-                    marginBottom: 8,
-                  }}
-                >
+                <div style={{ display: "flex", gap: 8, marginBottom: 8 }}>
                   <div style={{ flex: 2 }}>
-                    <label
-                      style={{ display: "block", marginBottom: 4 }}
-                    >
-                      City
-                    </label>
+                    <label style={{ display: "block", marginBottom: 4 }}>City</label>
                     <input
                       name="city"
-                      type="text"
                       value={addForm.city}
                       onChange={handleAddChange}
                       style={{ width: "100%" }}
                       disabled={!selectedClientId}
                     />
                   </div>
-
                   <div style={{ flex: 1 }}>
-                    <label
-                      style={{ display: "block", marginBottom: 4 }}
-                    >
-                      Province
-                    </label>
+                    <label style={{ display: "block", marginBottom: 4 }}>Province</label>
                     <input
                       name="province"
-                      type="text"
                       value={addForm.province}
                       onChange={handleAddChange}
                       style={{ width: "100%" }}
-                      disabled={!selectedClientId}
                       placeholder="ON"
+                      disabled={!selectedClientId}
                     />
                   </div>
-
                   <div style={{ flex: 1 }}>
-                    <label
-                      style={{ display: "block", marginBottom: 4 }}
-                    >
-                      Postal
-                    </label>
+                    <label style={{ display: "block", marginBottom: 4 }}>Postal</label>
                     <input
                       name="postal"
-                      type="text"
                       value={addForm.postal}
                       onChange={handleAddChange}
                       style={{ width: "100%" }}
-                      disabled={!selectedClientId}
                       placeholder="L6T 1A1"
+                      disabled={!selectedClientId}
                     />
                   </div>
                 </div>
 
-                <button
-                  type="submit"
-                  disabled={addSubmitting || !selectedClientId}
-                >
+                <button type="submit" disabled={addSubmitting || !selectedClientId}>
                   {addSubmitting ? "Saving..." : "Add Address"}
                 </button>
               </form>
-            </section>
+            </>
           ) : (
-            <section>
-              <h4>Edit Ship - To Address For Existing Client</h4>
+            <>
+              <h4>Edit Address</h4>
+              {editMessage && <div style={{ color: "green", marginBottom: 8 }}>{editMessage}</div>}
+              {editError && <div style={{ color: "red", marginBottom: 8 }}>{editError}</div>}
 
-              {editMessage && (
-                <div style={{ marginBottom: 8, color: "green" }}>
-                  {editMessage}
-                </div>
-              )}
-              {editError && (
-                <div style={{ marginBottom: 8, color: "red" }}>
-                  {editError}
-                </div>
-              )}
-
-              <div style={{ marginBottom: 8 }}>
+              <div style={{ marginBottom: 12 }}>
                 <label style={{ display: "block", marginBottom: 4 }}>
                   Select address
                 </label>
                 <select
                   value={selectedAddressId}
                   onChange={(e) =>
-                    setSelectedAddressId(
-                      e.target.value ? Number(e.target.value) : ""
-                    )
+                    setSelectedAddressId(e.target.value ? Number(e.target.value) : "")
                   }
                   style={{ width: "100%" }}
-                  disabled={!selectedClientId || addresses.length === 0}
+                  disabled={!selectedClientId}
                 >
                   <option value="">-- Select --</option>
                   {addresses.map((a) => (
                     <option key={a.id} value={a.id}>
-                      {a.location_name ? `${a.location_name} — ` : ""}
-                      {a.address}, {a.city}
+                      {a.location_name} — {a.city} {!a.active ? "(inactive)" : ""}
                     </option>
                   ))}
                 </select>
@@ -472,12 +489,9 @@ const AddressAdminSection: React.FC = () => {
 
               <form onSubmit={handleEditSubmit}>
                 <div style={{ marginBottom: 8 }}>
-                  <label style={{ display: "block", marginBottom: 4 }}>
-                    Location Name (optional)
-                  </label>
+                  <label style={{ display: "block", marginBottom: 4 }}>Location Name</label>
                   <input
                     name="location_name"
-                    type="text"
                     value={editForm.location_name}
                     onChange={handleEditChange}
                     style={{ width: "100%" }}
@@ -486,12 +500,9 @@ const AddressAdminSection: React.FC = () => {
                 </div>
 
                 <div style={{ marginBottom: 8 }}>
-                  <label style={{ display: "block", marginBottom: 4 }}>
-                    Address
-                  </label>
+                  <label style={{ display: "block", marginBottom: 4 }}>Address</label>
                   <input
                     name="address"
-                    type="text"
                     value={editForm.address}
                     onChange={handleEditChange}
                     style={{ width: "100%" }}
@@ -499,147 +510,119 @@ const AddressAdminSection: React.FC = () => {
                   />
                 </div>
 
-                <div
-                  style={{
-                    display: "flex",
-                    gap: 8,
-                    marginBottom: 8,
-                  }}
-                >
+                <div style={{ display: "flex", gap: 8, marginBottom: 8 }}>
                   <div style={{ flex: 2 }}>
-                    <label
-                      style={{ display: "block", marginBottom: 4 }}
-                    >
-                      City
-                    </label>
+                    <label style={{ display: "block", marginBottom: 4 }}>City</label>
                     <input
                       name="city"
-                      type="text"
                       value={editForm.city}
                       onChange={handleEditChange}
                       style={{ width: "100%" }}
                       disabled={!selectedAddressId}
                     />
                   </div>
-
                   <div style={{ flex: 1 }}>
-                    <label
-                      style={{ display: "block", marginBottom: 4 }}
-                    >
-                      Province
-                    </label>
+                    <label style={{ display: "block", marginBottom: 4 }}>Province</label>
                     <input
                       name="province"
-                      type="text"
                       value={editForm.province}
                       onChange={handleEditChange}
                       style={{ width: "100%" }}
                       disabled={!selectedAddressId}
-                      placeholder="ON"
                     />
                   </div>
-
                   <div style={{ flex: 1 }}>
-                    <label
-                      style={{ display: "block", marginBottom: 4 }}
-                    >
-                      Postal
-                    </label>
+                    <label style={{ display: "block", marginBottom: 4 }}>Postal</label>
                     <input
                       name="postal"
-                      type="text"
                       value={editForm.postal}
                       onChange={handleEditChange}
                       style={{ width: "100%" }}
                       disabled={!selectedAddressId}
-                      placeholder="L6T 1A1"
                     />
                   </div>
                 </div>
 
-                <button
-                  type="submit"
-                  disabled={editSubmitting || !selectedAddressId}
-                >
+                <button type="submit" disabled={editSubmitting || !selectedAddressId}>
                   {editSubmitting ? "Updating..." : "Update Address"}
                 </button>
               </form>
-            </section>
+            </>
           )}
         </div>
 
-        {/* Right column: address list */}
-        <div style={{ flex: 1, minWidth: 300 }}>
-          <h4>Addresses for Selected Client</h4>
+        {/* Right: address list */}
+        <div style={{ flex: 1, minWidth: 320 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <h4 style={{ margin: 0 }}>Addresses for Selected Client</h4>
 
-          {loadingAddresses ? (
-            <p>Loading addresses...</p>
-          ) : !selectedClientId ? (
-            <p>Select a client to view addresses.</p>
+            <label style={{ fontSize: 14 }}>
+              <input
+                type="checkbox"
+                checked={showInactive}
+                onChange={(e) => setShowInactive(e.target.checked)}
+                style={{ marginRight: 6 }}
+                disabled={!selectedClientId}
+              />
+              Show inactive
+            </label>
+          </div>
+
+          {!selectedClientId ? (
+            <p style={{ marginTop: 8 }}>Select a client to view addresses.</p>
+          ) : loadingAddresses ? (
+            <p style={{ marginTop: 8 }}>Loading addresses...</p>
           ) : addresses.length === 0 ? (
-            <p>No addresses yet for this client.</p>
+            <p style={{ marginTop: 8 }}>No addresses found.</p>
           ) : (
             <div
               style={{
-                maxHeight: "200px",
+                marginTop: 8,
+                maxHeight: 240,
                 overflowY: "auto",
                 border: "1px solid #ddd",
                 borderRadius: 4,
               }}
             >
-              <table
-                style={{
-                  width: "100%",
-                  borderCollapse: "collapse",
-                  fontSize: 14,
-                }}
-              >
+              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 14 }}>
                 <thead>
                   <tr>
-                    <th
-                      style={{
-                        borderBottom: "1px solid #ccc",
-                        textAlign: "left",
-                        padding: "4px 2px",
-                        position: "sticky",
-                        top: 0,
-                        background: "#486882",
-                      }}
-                    >
+                    <th style={{ position: "sticky", top: 0, background: "#486882", textAlign: "left" }}>
                       Location
                     </th>
-                    <th
-                      style={{
-                        borderBottom: "1px solid #ccc",
-                        textAlign: "left",
-                        padding: "4px 2px",
-                        position: "sticky",
-                        top: 0,
-                        background: "#486882",
-                      }}
-                    >
+                    <th style={{ position: "sticky", top: 0, background: "#486882", textAlign: "left" }}>
                       Address
+                    </th>
+                    <th style={{ position: "sticky", top: 0, background: "#486882", textAlign: "left" }}>
+                      Status
+                    </th>
+                    <th style={{ position: "sticky", top: 0, background: "#486882", textAlign: "center" }}>
+                      Actions
                     </th>
                   </tr>
                 </thead>
                 <tbody>
                   {addresses.map((a) => (
-                    <tr key={a.id}>
-                      <td
-                        style={{
-                          borderBottom: "1px solid #eee",
-                          padding: "4px 2px",
-                        }}
-                      >
-                        {a.location_name || <em>(none)</em>}
+                    <tr key={a.id} style={{ opacity: a.active ? 1 : 0.6 }}>
+                      <td style={{ borderBottom: "1px solid #eee", padding: "4px 6px" }}>
+                        {a.location_name}
                       </td>
-                      <td
-                        style={{
-                          borderBottom: "1px solid #eee",
-                          padding: "4px 2px",
-                        }}
-                      >
-                        {a.address}, {a.city}
+                      <td style={{ borderBottom: "1px solid #eee", padding: "4px 6px" }}>
+                        {a.address}, {a.city}, {a.province} {a.postal}
+                      </td>
+                      <td style={{ borderBottom: "1px solid #eee", padding: "4px 6px" }}>
+                        {a.active ? "Active" : "Inactive"}
+                      </td>
+                      <td style={{ borderBottom: "1px solid #eee", padding: "4px 6px", textAlign: "right" }}>
+                        {a.active ? (
+                          <button type="button" onClick={() => toggleAddressActive(a.id, false)}>
+                            Disable
+                          </button>
+                        ) : (
+                          <button type="button" onClick={() => toggleAddressActive(a.id, true)}>
+                            Enable
+                          </button>
+                        )}
                       </td>
                     </tr>
                   ))}

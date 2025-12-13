@@ -15,26 +15,30 @@ router.get("/", async (req: Request, res: Response) => {
     const params = req.params as { clientId?: string };
     const clientId = Number(params.clientId);
     const search = (req.query.search as string) || "";
-
+    const includeInactive = req.query.includeInactive === "true" || req.query.includeInactive === "1";
+    
     if (Number.isNaN(clientId)) {
       return res.status(400).json({ error: "Invalid clientId" });
     }
 
     const where: Prisma.ClientAddressWhereInput = {
       client_id: clientId,
-      active: true,
     };
 
-    if (search) {
+    if (!includeInactive) where.active = true;
+
+    if (search.trim()) {
       where.OR = [
-        { location_name: { contains: search, mode: "insensitive" } },
-        { address: { contains: search, mode: "insensitive" } },
+        { location_name: { contains: search.trim(), mode: "insensitive" } },
+        { address: { contains: search.trim(), mode: "insensitive" } },
+        { city: { contains: search.trim(), mode: "insensitive" } },
       ];
     }
 
     const addresses = await prisma.clientAddress.findMany({
       where,
-      orderBy: { location_name: "asc" },
+      orderBy: [{ active: "desc" }, { location_name: "asc" }],
+      take: 20,
     });
 
     res.json(addresses);
