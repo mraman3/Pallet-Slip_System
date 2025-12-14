@@ -30,13 +30,17 @@ const ShipToSection: React.FC<Props> = ({
             }
             disabled={!clientSelected}
           >
-            <option value="">-- Select --</option>
-            {addresses.map((addr) => (
-              <option key={addr.id} value={addr.id}>
-                {addr.location_name ? `${addr.location_name} — ` : ""}
-                {addr.address}, {addr.city}
-              </option>
-            ))}
+            {addresses
+              .slice()
+              .sort((a, b) => {
+                if (a.active !== b.active) return (b.active ? 1 : 0) - (a.active ? 1 : 0);
+                return (a.location_name || "").localeCompare(b.location_name || "");
+              })
+              .map((a) => (
+                <option key={a.id} value={a.id}>
+                  {a.location_name} — {a.city}{a.active ? "" : " (inactive)"}
+                </option>
+              ))}
           </select>
         </label>
       </div>

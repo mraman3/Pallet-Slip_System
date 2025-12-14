@@ -5,7 +5,6 @@ import type {
   ClientAddress,
   Clerk,
   PalletType,
-  SlipItem,
 } from "../../types/domain";
 
 import SoldToSection from "./components/SoldToSection";
@@ -14,7 +13,37 @@ import SlipDetailsSection from "./components/SlipDetailsSection";
 import LineItemSection from "./components/LineItemSection";
 import CommentsSection from "./components/CommentsSection";
 
-const SlipForm: React.FC = () => {
+import type { SlipWithRelations } from "../../types/slipApi";
+
+export type SlipFormProps = {
+  mode: "create" | "edit";
+  initialSlip?: SlipWithRelations | null;
+  onSaved?: (slip: SlipWithRelations) => void; // optional callback after save
+};
+
+type UiSlipItem = {
+  pallet_type_id: number | "";
+  qty_ordered: string;
+  qty_shipped: string;
+};
+
+const emptyItem: UiSlipItem = {
+  pallet_type_id: "",
+  qty_ordered: "",
+  qty_shipped: "",
+};
+
+const toYMD = (iso: string) => {
+  // "2025-12-14T..." -> "2025-12-14"
+  if (!iso) return "";
+  return iso.slice(0, 10);
+};
+
+const SlipForm: React.FC<SlipFormProps> = ({
+  mode,
+  initialSlip = null,
+  onSaved,
+}) => {
   // dropdown data
   const [clerks, setClerks] = useState<Clerk[]>([]);
   const [clientSearch, setClientSearch] = useState("");
@@ -36,41 +65,55 @@ const SlipForm: React.FC = () => {
   const [comments2, setComments2] = useState("");
 
   // single line item for now
-  const [item, setItem] = useState<SlipItem>({
-    pallet_type_id: "",
-    qty_ordered: 0,
-    qty_shipped: 0,
-  });
+  const [item, setItem] = useState<UiSlipItem>(emptyItem);
 
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  const includeInactive = mode === "edit"; // important for editing old slips
+
   // --- Load clerks + pallet types on mount ---
   useEffect(() => {
+    const controller = new AbortController();
+
     const fetchClerks = async () => {
       try {
-        const res = await fetch("/api/clerks");
+        const params = new URLSearchParams();
+        if (includeInactive) params.set("includeInactive", "true");
+
+        const res = await fetch(`/api/clerks?${params.toString()}`, {
+          signal: controller.signal,
+        });
         const data = await res.json();
         setClerks(data);
       } catch (err) {
+        if ((err as any).name === "AbortError") return;
         console.error("Error loading clerks", err);
       }
     };
 
     const fetchPalletTypes = async () => {
       try {
-        const res = await fetch("/api/pallet-types");
+        const params = new URLSearchParams();
+        if (includeInactive) params.set("includeInactive", "true");
+
+        const res = await fetch(`/api/pallet-types?${params.toString()}`, {
+          signal: controller.signal,
+        });
         const data = await res.json();
         setPalletTypes(data);
       } catch (err) {
+        if ((err as any).name === "AbortError") return;
         console.error("Error loading pallet types", err);
       }
     };
 
     fetchClerks();
     fetchPalletTypes();
-  }, []);
+
+    return () => controller.abort();
+  }, [includeInactive]);
 
   // --- Search / load clients (all if search empty) ---
   useEffect(() => {
@@ -79,9 +122,8 @@ const SlipForm: React.FC = () => {
     const loadClients = async () => {
       try {
         const params = new URLSearchParams();
-        if (clientSearch.trim()) {
-          params.set("search", clientSearch.trim());
-        }
+        if (clientSearch.trim()) params.set("search", clientSearch.trim());
+        if (includeInactive) params.set("includeInactive", "true");
 
         const res = await fetch(`/api/clients?${params.toString()}`, {
           signal: controller.signal,
@@ -99,10 +141,12 @@ const SlipForm: React.FC = () => {
       controller.abort();
       clearTimeout(timeout);
     };
-  }, [clientSearch]);
+  }, [clientSearch, includeInactive]);
 
   // --- Load addresses when client is selected ---
   useEffect(() => {
+    const controller = new AbortController();
+
     const fetchAddresses = async () => {
       if (!selectedClientId) {
         setAddresses([]);
@@ -111,19 +155,62 @@ const SlipForm: React.FC = () => {
       }
 
       try {
-        const res = await fetch(`/api/clients/${selectedClientId}/addresses`);
+        const params = new URLSearchParams();
+        if (includeInactive) params.set("includeInactive", "true");
+
+        const res = await fetch(
+          `/api/clients/${selectedClientId}/addresses?${params.toString()}`,
+          { signal: controller.signal }
+        );
         const data = await res.json();
         setAddresses(data);
-        if (data.length === 1) {
+
+        // if only one address, select it (create mode only)
+        if (mode === "create" && data.length === 1) {
           setSelectedAddressId(data[0].id);
         }
       } catch (err) {
+        if ((err as any).name === "AbortError") return;
         console.error("Error loading addresses", err);
       }
     };
 
     fetchAddresses();
-  }, [selectedClientId]);
+    return () => controller.abort();
+  }, [selectedClientId, includeInactive, mode]);
+
+  // --- Prefill form in edit mode ---
+  useEffect(() => {
+    if (mode !== "edit") return;
+    if (!initialSlip) return;
+
+    setMessage(null);
+    setError(null);
+
+    setSelectedClientId(initialSlip.client_id);
+    setSelectedAddressId(initialSlip.ship_to_address_id);
+    setSelectedClerkId(initialSlip.clerk_id);
+
+    setDate(toYMD(initialSlip.date));
+    setCustomerOrder(initialSlip.customer_order);
+
+    setDateShipped(initialSlip.date_shipped ? toYMD(initialSlip.date_shipped) : "");
+    setShippedVia(initialSlip.shipped_via);
+
+    setComments1(initialSlip.comments_line1 ?? "");
+    setComments2(initialSlip.comments_line2 ?? "");
+
+    const first = initialSlip.items?.[0];
+    if (first) {
+      setItem({
+        pallet_type_id: first.pallet_type_id,
+        qty_ordered: first.qty_ordered ?? "",
+        qty_shipped: first.qty_shipped ?? "",
+      });
+    } else {
+      setItem(emptyItem);
+    }
+  }, [mode, initialSlip]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -160,14 +247,21 @@ const SlipForm: React.FC = () => {
         items: [
           {
             pallet_type_id: item.pallet_type_id,
-            qty_ordered: item.qty_ordered,
-            qty_shipped: item.qty_shipped,
+            qty_ordered: String(item.qty_ordered),
+            qty_shipped: String(item.qty_shipped),
           },
         ],
       };
 
-      const res = await fetch("/api/slips", {
-        method: "POST",
+      const url =
+        mode === "edit" && initialSlip?.id
+          ? `/api/slips/${initialSlip.id}`
+          : "/api/slips";
+
+      const method = mode === "edit" ? "PUT" : "POST";
+
+      const res = await fetch(url, {
+        method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
       });
@@ -175,13 +269,37 @@ const SlipForm: React.FC = () => {
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.error || "Failed to create slip");
+        setError(
+          data.error ||
+            `Failed to ${mode === "edit" ? "update" : "create"} slip`
+        );
       } else {
-        setMessage(`Slip #${data.slip_number} created successfully.`);
+        setMessage(
+          mode === "edit"
+            ? `Slip #${data.slip_number} updated successfully.`
+            : `Slip #${data.slip_number} created successfully.`
+        );
+        onSaved?.(data);
+
+        // optional: reset form after create
+        if (mode === "create") {
+          setSelectedClientId("");
+          setSelectedAddressId("");
+          setSelectedClerkId("");
+          setShippedVia("BPI");
+          setDate("");
+          setCustomerOrder("");
+          setDateShipped("");
+          setComments1("");
+          setComments2("");
+          setItem(emptyItem);
+        }
       }
     } catch (err) {
       console.error("Error submitting slip", err);
-      setError("Unexpected error while creating slip.");
+      setError(
+        `Unexpected error while ${mode === "edit" ? "updating" : "creating"} slip.`
+      );
     } finally {
       setSubmitting(false);
     }
@@ -189,13 +307,8 @@ const SlipForm: React.FC = () => {
 
   return (
     <form onSubmit={handleSubmit} style={{ maxWidth: 900 }}>
-      {/* Status messages */}
-      {message && (
-        <div style={{ marginBottom: 8, color: "green" }}>{message}</div>
-      )}
-      {error && (
-        <div style={{ marginBottom: 8, color: "red" }}>{error}</div>
-      )}
+      {message && <div style={{ marginBottom: 8, color: "green" }}>{message}</div>}
+      {error && <div style={{ marginBottom: 8, color: "red" }}>{error}</div>}
 
       <SoldToSection
         clientSearch={clientSearch}
@@ -226,9 +339,12 @@ const SlipForm: React.FC = () => {
         setShippedVia={setShippedVia}
       />
 
+      {/* LineItemSection expects your old SlipItem shape.
+          If your LineItemSection uses numbers, update it to accept strings too.
+          For now we pass compatible fields. */}
       <LineItemSection
-        item={item}
-        setItem={setItem}
+        item={item as any}
+        setItem={setItem as any}
         palletTypes={palletTypes}
       />
 
@@ -240,7 +356,13 @@ const SlipForm: React.FC = () => {
       />
 
       <button type="submit" disabled={submitting}>
-        {submitting ? "Saving slip..." : "Save Slip"}
+        {submitting
+          ? mode === "edit"
+            ? "Updating slip..."
+            : "Saving slip..."
+          : mode === "edit"
+          ? "Update Slip"
+          : "Save Slip"}
       </button>
     </form>
   );

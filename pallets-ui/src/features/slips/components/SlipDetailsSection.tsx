@@ -73,11 +73,17 @@ const SlipDetailsSection: React.FC<Props> = ({
             }
           >
             <option value="">-- Select --</option>
-            {clerks.map((clerk) => (
-              <option key={clerk.id} value={clerk.id}>
-                {clerk.name}
-              </option>
-            ))}
+            {clerks
+              .slice()
+              .sort((a, b) => {
+                if (a.active !== b.active) return (b.active ? 1 : 0) - (a.active ? 1 : 0);
+                return a.name.localeCompare(b.name);
+              })
+              .map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.name}{c.active ? "" : " (inactive)"}
+                </option>
+              ))}
           </select>
         </label>
       </div>

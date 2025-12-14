@@ -31,11 +31,17 @@ const LineItemSection: React.FC<Props> = ({
             }
           >
             <option value="">-- Select --</option>
-            {palletTypes.map((pt) => (
-              <option key={pt.id} value={pt.id}>
-                {pt.name}
-              </option>
-            ))}
+            {palletTypes
+              .slice()
+              .sort((a, b) => {
+                if (a.active !== b.active) return (b.active ? 1 : 0) - (a.active ? 1 : 0);
+                return a.name.localeCompare(b.name);
+              })
+              .map((p) => (
+                <option key={p.id} value={p.id}>
+                  {p.name}{p.active ? "" : " (inactive)"}
+                </option>
+              ))}
           </select>
         </label>
 

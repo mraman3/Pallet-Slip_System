@@ -36,7 +36,7 @@ router.get("/", async (req: Request, res: Response) => {
     const where: Prisma.SlipWhereInput = {};
 
     if (slip_number) {
-      where.slip_number = slip_number;
+      where.slip_number = { contains: slip_number, mode: "insensitive" };;
     }
 
     if (client_id) {
@@ -66,14 +66,14 @@ router.get("/", async (req: Request, res: Response) => {
     }
 
     if (shipped_via) {
-		const valid = ["BPI", "P/U"];
-		if (!valid.includes(shipped_via)) {
-			return res.status(400).json({
-				error: "shipped_via must be 'BPI' or 'P/U'"
-			});
-		}
-		where.shipped_via = shipped_via;
-	}
+      const valid = ["BPI", "P/U"];
+      if (!valid.includes(shipped_via)) {
+        return res.status(400).json({
+          error: "shipped_via must be 'BPI' or 'P/U'"
+        });
+      }
+      where.shipped_via = shipped_via;
+    }
 
     if (customer_order) {
       // substring search
@@ -343,42 +343,41 @@ router.post("/", async (req: Request, res: Response) => {
       });
     }
 
-    // ---- 4) Generate next slip number (string) ----
-    const lastSlip = await prisma.slip.findFirst({
-      orderBy: { created_at: "desc" },
-      select: { slip_number: true },
-    });
+    const createdSlip = await prisma.$transaction(async (tx) => {
+      // 1) Atomically increment counter
+      const counter = await tx.slipCounter.update({
+        where: { id: 1 },
+        data: { nextNum: { increment: 1 } },
+        select: { nextNum: true },
+      });
 
-    let nextSlipNumber = "1";
-    if (lastSlip?.slip_number) {
-      const lastNum = Number(lastSlip.slip_number);
-      if (!Number.isNaN(lastNum)) {
-        nextSlipNumber = String(lastNum + 1);
-      }
-    }
+      const slipNumber = String(counter.nextNum);
 
-    // ---- 5) Create slip header ----
-    const createdSlip = await prisma.slip.create({
-      data: {
-        slip_number: nextSlipNumber,
-        client_id: clientId,
-        ship_to_address_id: shipToId,
-        clerk_id: clerkId,
-        date: mainDate,
-        customer_order,
-        date_shipped: shippedDate,
-        shipped_via,
-        comments_line1: comments_line1 || null,
-        comments_line2: comments_line2 || null,
-      },
-    });
+      // 2) Create slip
+      const slip = await tx.slip.create({
+        data: {
+          slip_number: slipNumber,
+          client_id: clientId,
+          ship_to_address_id: shipToId,
+          clerk_id: clerkId,
+          date: mainDate,
+          customer_order,
+          date_shipped: shippedDate,
+          shipped_via,
+          comments_line1: comments_line1 || null,
+          comments_line2: comments_line2 || null,
+        },
+      });
 
-    // ---- 6) Create slip items ----
-    await prisma.slipItem.createMany({
-      data: itemRows.map((row) => ({
-        ...row,
-        slip_id: createdSlip.id,
-      })),
+      // 3) Create items
+      await tx.slipItem.createMany({
+        data: itemRows.map((row) => ({
+          ...row,
+          slip_id: slip.id,
+        })),
+      });
+
+      return slip;
     });
 
     // ---- 7) Fetch full slip with relations to return ----
@@ -629,6 +628,7 @@ router.put("/:id", async (req: Request, res: Response) => {
       });
     });
 
+    if (!updatedSlip) return res.status(500).json({ error: "Failed to update slip" });
     res.json(updatedSlip);
   } catch (error: any) {
     console.error("Error updating slip", error);

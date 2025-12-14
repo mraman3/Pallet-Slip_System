@@ -43,11 +43,19 @@ const SoldToSection: React.FC<Props> = ({
             }
           >
             <option value="">-- Select --</option>
-            {clients.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.name} — {c.city}, {c.province}
-              </option>
-            ))}
+            {clients
+              .slice()
+              .sort((a, b) => {
+                const aActive = a.active ? 1 : 0;
+                const bActive = b.active ? 1 : 0;
+                if (aActive !== bActive) return bActive - aActive; // active first
+                return a.name.localeCompare(b.name); // alpha
+              })
+              .map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.name}{c.active ? "" : " (inactive)"}
+                </option>
+              ))}
           </select>
         </label>
       </div>

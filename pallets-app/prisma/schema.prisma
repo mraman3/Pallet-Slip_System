@@ -57,6 +57,11 @@ model PalletType {
   items      SlipItem[]
 }
 
+model SlipCounter {
+  id      Int @id @default(1)
+  nextNum Int
+}
+
 model Slip {
   id                 Int            @id @default(autoincrement())
   slip_number        String         @unique

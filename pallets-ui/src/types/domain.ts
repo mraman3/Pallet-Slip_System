@@ -34,8 +34,29 @@ export type PalletType = {
 
 };
 
-export type SlipItemInput = {
+export type SlipItem = {
+  id?: number;
   pallet_type_id: number | "";
-  qty_ordered: string;
-  qty_shipped: string;
+  qty_ordered: number;
+  qty_shipped: number;
+};
+
+// ---- Slip ----
+export type Slip = {
+  id: number;
+  slip_number: string;
+
+  client_id: number;
+  ship_to_address_id: number;
+
+  clerk_id: number;
+
+  date: string;              // DateTime -> ISO string
+  date_shipped: string | null;
+
+  customer_order: string;
+  shipped_via: string;
+
+  comments_line1?: string | null;
+  comments_line2?: string | null;
 };

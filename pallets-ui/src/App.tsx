@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import SlipForm from "./features/slips/SlipForm";
 import AdminPage from "./features/admin/AdminPage";
+import SlipSearchPage from "./features/createdSlips/SlipSearchPage";
 
-type Tab = "slip" | "admin";
+
+type Tab = "slip" | "admin" | "search";
 
 function App() {
   const [activeTab, setActiveTab] = useState<Tab>("slip");
@@ -40,19 +42,33 @@ function App() {
         >
           Admin / Master Data
         </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab("search")}
+          style={{
+            padding: "8px 16px",
+            borderRadius: 4,
+            border: activeTab === "admin" ? "2px solid #333" : "1px solid #ccc",
+            backgroundColor: activeTab === "admin" ? "#a6d2f5" : "#486882",
+            cursor: "pointer",
+          }}
+        >
+          Find / Recent Slips
+        </button>
       </div>
 
       {/* Page content based on active tab */}
-      {activeTab === "slip" ? (
+      {activeTab === "slip" && (
         <>
           <p style={{ marginBottom: "16px" }}>
             Fill in the fields below to create a new slip.
           </p>
           <SlipForm />
         </>
-      ) : (
-        <AdminPage />
       )}
+      {activeTab === "admin" && <AdminPage />}
+      {activeTab === "search" && <SlipSearchPage />}
     </div>
   );
 }
