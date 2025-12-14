@@ -37,8 +37,8 @@ export type PalletType = {
 export type SlipItem = {
   id?: number;
   pallet_type_id: number | "";
-  qty_ordered: number;
-  qty_shipped: number;
+  qty_ordered: string;
+  qty_shipped: string;
 };
 
 // ---- Slip ----

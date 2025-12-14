@@ -24,21 +24,22 @@ const ShipToSection: React.FC<Props> = ({
           <select
             value={selectedAddressId}
             onChange={(e) =>
-              setSelectedAddressId(
-                e.target.value ? Number(e.target.value) : ""
-              )
+              setSelectedAddressId(e.target.value ? Number(e.target.value) : "")
             }
             disabled={!clientSelected}
           >
+            <option value="">-- Select Address --</option>
+
             {addresses
               .slice()
               .sort((a, b) => {
-                if (a.active !== b.active) return (b.active ? 1 : 0) - (a.active ? 1 : 0);
+                if (a.active !== b.active) return Number(b.active) - Number(a.active);
                 return (a.location_name || "").localeCompare(b.location_name || "");
               })
               .map((a) => (
                 <option key={a.id} value={a.id}>
-                  {a.location_name} — {a.city}{a.active ? "" : " (inactive)"}
+                  {a.location_name} — {a.city}
+                  {!a.active ? " (inactive)" : ""}
                 </option>
               ))}
           </select>

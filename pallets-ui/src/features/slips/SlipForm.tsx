@@ -162,12 +162,14 @@ const SlipForm: React.FC<SlipFormProps> = ({
           `/api/clients/${selectedClientId}/addresses?${params.toString()}`,
           { signal: controller.signal }
         );
+
         const data = await res.json();
         setAddresses(data);
 
-        // if only one address, select it (create mode only)
-        if (mode === "create" && data.length === 1) {
-          setSelectedAddressId(data[0].id);
+        if (mode === "create") {
+          setSelectedAddressId("");
+        } else if (mode === "edit" && initialSlip) {
+          setSelectedAddressId(initialSlip.ship_to_address_id);
         }
       } catch (err) {
         if ((err as any).name === "AbortError") return;
@@ -177,7 +179,8 @@ const SlipForm: React.FC<SlipFormProps> = ({
 
     fetchAddresses();
     return () => controller.abort();
-  }, [selectedClientId, includeInactive, mode]);
+  }, [selectedClientId, includeInactive]);
+
 
   // --- Prefill form in edit mode ---
   useEffect(() => {
@@ -219,6 +222,10 @@ const SlipForm: React.FC<SlipFormProps> = ({
     setError(null);
 
     try {
+      if (!selectedAddressId) {
+        setError("Please select a ship-to address.");
+        return;
+      }
       if (
         !selectedClientId ||
         !selectedAddressId ||
@@ -271,7 +278,7 @@ const SlipForm: React.FC<SlipFormProps> = ({
       if (!res.ok) {
         setError(
           data.error ||
-            `Failed to ${mode === "edit" ? "update" : "create"} slip`
+          `Failed to ${mode === "edit" ? "update" : "create"} slip`
         );
       } else {
         setMessage(
@@ -361,8 +368,8 @@ const SlipForm: React.FC<SlipFormProps> = ({
             ? "Updating slip..."
             : "Saving slip..."
           : mode === "edit"
-          ? "Update Slip"
-          : "Save Slip"}
+            ? "Update Slip"
+            : "Save Slip"}
       </button>
     </form>
   );

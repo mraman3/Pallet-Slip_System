@@ -345,10 +345,18 @@ router.post("/", async (req: Request, res: Response) => {
 
     const createdSlip = await prisma.$transaction(async (tx) => {
       // 1) Atomically increment counter
-      const counter = await tx.slipCounter.update({
+      const counter = await tx.slipCounter.upsert({
         where: { id: 1 },
-        data: { nextNum: { increment: 1 } },
-        select: { nextNum: true },
+        create: {
+          id: 1,
+          nextNum: 1,
+        },
+        update: {
+          nextNum: { increment: 1 },
+        },
+        select: {
+          nextNum: true,
+        },
       });
 
       const slipNumber = String(counter.nextNum);

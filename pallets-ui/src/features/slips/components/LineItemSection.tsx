@@ -53,7 +53,7 @@ const LineItemSection: React.FC<Props> = ({
             onChange={(e) =>
               setItem({
                 ...item,
-                qty_ordered: Number(e.target.value) || 0,
+                qty_ordered: e.target.value,
               })
             }
           />
@@ -67,7 +67,7 @@ const LineItemSection: React.FC<Props> = ({
             onChange={(e) =>
               setItem({
                 ...item,
-                qty_shipped: Number(e.target.value) || 0,
+                qty_shipped: e.target.value,
               })
             }
           />
