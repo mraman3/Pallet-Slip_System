@@ -1,9 +1,9 @@
 import React from "react";
-import type { PalletType, SlipItemInput } from "../../../types/domain";
+import type { PalletType, SlipItem } from "../../../types/domain";
 
 type Props = {
-  item: SlipItemInput;
-  setItem: (value: SlipItemInput) => void;
+  item: SlipItem;
+  setItem: (value: SlipItem) => void;
   palletTypes: PalletType[];
 };
 
@@ -47,7 +47,7 @@ const LineItemSection: React.FC<Props> = ({
             onChange={(e) =>
               setItem({
                 ...item,
-                qty_ordered: e.target.value,
+                qty_ordered: Number(e.target.value) || 0,
               })
             }
           />
@@ -61,7 +61,7 @@ const LineItemSection: React.FC<Props> = ({
             onChange={(e) =>
               setItem({
                 ...item,
-                qty_shipped: e.target.value,
+                qty_shipped: Number(e.target.value) || 0,
               })
             }
           />

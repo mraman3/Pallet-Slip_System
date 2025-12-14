@@ -5,7 +5,7 @@ import type {
   ClientAddress,
   Clerk,
   PalletType,
-  SlipItemInput,
+  SlipItem,
 } from "../../types/domain";
 
 import SoldToSection from "./components/SoldToSection";
@@ -36,10 +36,10 @@ const SlipForm: React.FC = () => {
   const [comments2, setComments2] = useState("");
 
   // single line item for now
-  const [item, setItem] = useState<SlipItemInput>({
+  const [item, setItem] = useState<SlipItem>({
     pallet_type_id: "",
-    qty_ordered: "",
-    qty_shipped: "",
+    qty_ordered: 0,
+    qty_shipped: 0,
   });
 
   const [submitting, setSubmitting] = useState(false);
