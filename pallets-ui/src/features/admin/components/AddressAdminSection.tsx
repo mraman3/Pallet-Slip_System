@@ -16,6 +16,7 @@ const AddressAdminSection: React.FC = () => {
   const [clientSearch, setClientSearch] = useState("");
   const [clients, setClients] = useState<Client[]>([]);
   const [selectedClientId, setSelectedClientId] = useState<number | "">("");
+  const [showInactiveClients, setShowInactiveClients] = useState(false);
 
   // --- addresses list (single source of truth) ---
   const [addressSearch, setAddressSearch] = useState("");
@@ -39,12 +40,11 @@ const AddressAdminSection: React.FC = () => {
   // -------------------------
   // CLIENT SEARCH (dropdown)
   // -------------------------
-  const fetchClients = async (searchValue: string, signal?: AbortSignal) => {
+  const fetchClients = async (searchValue: string, includeInactive: boolean, signal?: AbortSignal) => {
     try {
       const params = new URLSearchParams();
       if (searchValue.trim()) params.set("search", searchValue.trim());
-      // For admin screens it’s useful to allow finding inactive clients too:
-      params.set("includeInactive", "true");
+      if (includeInactive) params.set("includeInactive", "true");
 
       const res = await fetch(`/api/clients?${params.toString()}`, { signal });
       const data: Client[] = await res.json();
@@ -58,7 +58,7 @@ const AddressAdminSection: React.FC = () => {
   // initial client load
   useEffect(() => {
     const controller = new AbortController();
-    fetchClients("", controller.signal);
+    fetchClients("", showInactiveClients, controller.signal);
     return () => controller.abort();
   }, []);
 
@@ -66,13 +66,13 @@ const AddressAdminSection: React.FC = () => {
   useEffect(() => {
     const controller = new AbortController();
     const t = setTimeout(() => {
-      fetchClients(clientSearch, controller.signal);
+      fetchClients(clientSearch, showInactiveClients,controller.signal);
     }, 300);
     return () => {
       controller.abort();
       clearTimeout(t);
     };
-  }, [clientSearch]);
+  }, [clientSearch, showInactiveClients]);
 
   // -------------------------
   // ADDRESS LIST (by client)
@@ -328,7 +328,19 @@ const AddressAdminSection: React.FC = () => {
         </div>
 
         <div style={{ marginBottom: 12, width: "100%" }}>
-          <label style={{ display: "block", marginBottom: 4 }}>Select client</label>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <label style={{ display: "block", marginBottom: 4 }}>Select client</label>
+            <label style={{ fontSize: 14 }}>
+              {/** CHANGE THIS INPUT  */}
+              <input
+                type="checkbox"
+                checked={showInactiveClients}
+                onChange={(e) => setShowInactiveClients(e.target.checked)}
+                style={{ marginRight: 6 }}
+              />
+              Show inactive
+            </label>
+          </div>
           <select
             value={selectedClientId}
             onChange={(e) =>
