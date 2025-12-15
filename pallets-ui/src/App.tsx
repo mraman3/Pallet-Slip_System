@@ -49,8 +49,8 @@ function App() {
           style={{
             padding: "8px 16px",
             borderRadius: 4,
-            border: activeTab === "admin" ? "2px solid #333" : "1px solid #ccc",
-            backgroundColor: activeTab === "admin" ? "#a6d2f5" : "#486882",
+            border: activeTab === "search" ? "2px solid #333" : "1px solid #ccc",
+            backgroundColor: activeTab === "search" ? "#a6d2f5" : "#486882",
             cursor: "pointer",
           }}
         >
@@ -64,7 +64,7 @@ function App() {
           <p style={{ marginBottom: "16px" }}>
             Fill in the fields below to create a new slip.
           </p>
-          <SlipForm />
+          <SlipForm mode={"create"} />
         </>
       )}
       {activeTab === "admin" && <AdminPage />}
