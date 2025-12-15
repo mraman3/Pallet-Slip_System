@@ -30,6 +30,7 @@ router.get("/", async (req: Request, res: Response) => {
       to_date,
       from_date_shipped,
       to_date_shipped,
+      pallet_type_id,
       limit,
     } = req.query as Record<string, string>;
 
@@ -122,6 +123,20 @@ router.get("/", async (req: Request, res: Response) => {
       }
       where.date_shipped = dateShippedFilter;
     }
+
+    if (pallet_type_id) {
+      const id = Number(pallet_type_id);
+      if (Number.isNaN(id)) {
+        return res.status(400).json({ error: "pallet_type_id must be a number" });
+      }
+
+      where.items = {
+        some: {
+          pallet_type_id: id,
+        },
+      };
+    }
+
 
     const take = limit ? Math.min(Number(limit) || 100, 500) : 100;
 
