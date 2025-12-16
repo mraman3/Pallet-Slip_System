@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <title>Delivery Slip</title>
+
+  <!-- STYLE_BLOCK -->
+</head>
+
+<body>
+
+  <!-- ================= HEADER ================= -->
+  <div class="header">
+    <div class="header-left">
+      <img src="__LOGO_BASE64__" class="company-logo" />
+
+      <div class="company-info">
+        <div>7125 Auburn Road, Milton, Ontario L9E 0T6</div>
+        <div>Tel: (905) 693-0693</div>
+        <div>www.bramptonpallet.com</div>
+      </div>
+    </div>
+
+    <div class="header-right">
+      <div class="slip-title-box">
+        <div class="slip-title">DELIVERY SLIP</div>
+      </div>
+
+      <div class="slip-number">__SLIP_NUMBER__</div>
+    </div>
+  </div>
+
+  <!-- ================= SOLD / SHIP ================= -->
+  <div class="sold-ship">
+    <div class="address-block">
+      <div class="address-label">
+        <div>SOLD</div>
+        <div class="label-right">TO</div>
+      </div>
+
+      <div class="address-fields">
+        <div class="address-line">__CLIENT_NAME__</div>
+        <div class="address-line">__CLIENT_ADDRESS__</div>
+        <div class="address-line">__CLIENT_CITY__</div>
+        <div class="address-line empty-line"></div>
+      </div>
+    </div>
+
+    <div class="address-block">
+      <div class="address-label">
+        <div>SHIP</div>
+        <div class="label-right">TO</div>
+      </div>
+
+      <div class="address-fields">
+        <div class="address-line">__SHIP_NAME__</div>
+        <div class="address-line">__SHIP_ADDRESS__</div>
+        <div class="address-line">__SHIP_CITY__</div>
+        <div class="address-line empty-line"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= SLIP TABLE ================= -->
+  <table class="slip-table">
+
+    <thead>
+      <tr>
+        <th scope="col" class="col-20">DATE</th>
+        <th scope="col" class="col-20">CLERK</th>
+        <th scope="col" class="col-20 customer-order-header">
+          CUSTOMER<br />
+          ORDER#
+        </th>
+        <th scope="col" class="col-20">DATE SHIPPED</th>
+        <th scope="col" class="col-20">SHIPPED VIA</th>
+      </tr>
+    </thead>
+
+    <tbody class="items-body">
+      <tr>
+        <td>__DATE__</td>
+        <td>__CLERK__</td>
+        <td>__CUSTOMER_ORDER__</td>
+        <td>__DATE_SHIPPED__</td>
+        <td>__SHIPPED_VIA__</td>
+      </tr>
+
+      <tr class="section-header">
+        <th scope="col" class="col-20">QTY. ORDERED</th>
+        <th scope="col" class="col-20">QTY. SHIPPED</th>
+        <th scope="col" class="col-60" colspan="3">DESCRIPTION</th>
+      </tr>
+
+      __ITEM_ROWS__
+
+      <tr class="section-header">
+        <th scope="col" class="col-20">TRAILER # DROP</th>
+        <th scope="col" class="col-20">TRAILER # P/U</th>
+        <th scope="col" class="col-20">DRIVER</th>
+        <th scope="col" class="col-40" colspan="2">RECEIVED IN GOOD ORDER</th>
+      </tr>
+
+      <tr class="trailer-row">
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td colspan="2">&nbsp;</td>
+      </tr>
+    </tbody>
+
+  </table>
+
+  <!-- ================= COMMENTS ================= -->
+  <div class="comments-wrapper">
+    <div class="comments">
+      <div class="comments-title">COMMENTS</div>
+      <div class="comment-line">__COMMENTS_1__</div>
+      <div class="comment-line">__COMMENTS_2__</div>
+    </div>
+  </div>
+
+  <div class="thank-you">THANK YOU</div>
+
+</body>
+
+</html>

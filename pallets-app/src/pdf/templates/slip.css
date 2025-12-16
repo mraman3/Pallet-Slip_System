@@ -1,0 +1,247 @@
+/* =========================================================
+   FONTS & PAGE
+   ========================================================= */
+@font-face {
+  font-family: "CourierStdBold";
+  src: url(__COURIER_STD_FONT__);
+  font-weight: bold;
+  font-style: normal;
+}
+
+@page {
+  size: Letter;
+  margin: 0.75in;
+}
+
+/* =========================================================
+   GLOBAL RESET
+   ========================================================= */
+body {
+  margin: 0;
+  padding: 0;
+}
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin: 10px 0 70px 0;
+  page-break-inside: avoid;
+}
+
+/* LEFT */
+.header-left {
+  position: relative;
+  width: 400px;
+  margin-left: -25px;
+  margin-top: -10px;
+}
+
+.company-logo {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.company-info {
+  position: absolute;
+  left: 100px;
+  top: 110px;
+  text-align: center;
+  font-family: "Times New Roman", serif;
+  font-size: 14px;
+  line-height: 1.2;
+  margin-left: 25px;
+}
+
+/* RIGHT */
+.header-right {
+  text-align: right;
+  margin-top: 40px;
+}
+
+.slip-title-box {
+  display: flex;
+  align-items: center;
+  height: 40px;
+  padding: 0 18px;
+  border: 1.5px solid #000;
+  background: #e4e4e4;
+}
+
+.slip-title,
+.slip-number,
+.thank-you {
+  font-family: "CourierStdBold", monospace;
+  letter-spacing: 1.5px;
+}
+
+.slip-title {
+  font-size: 25px;
+}
+
+.slip-number {
+  margin-top: 10px;
+  font-size: 22px;
+  color: red;
+}
+
+/* =========================================================
+   SOLD / SHIP
+   ========================================================= */
+.sold-ship {
+  display: flex;
+  justify-content: center;
+  gap: 25px;
+  margin-bottom: 36px;
+  page-break-inside: avoid;
+}
+
+.address-block {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.address-label {
+  font-weight: bold;
+  font-size: 18px;
+  line-height: 1;
+}
+
+.label-right {
+  text-align: right;
+}
+
+.address-fields {
+  width: 245px;
+  font-size: 17px;
+}
+
+.address-line {
+  border-bottom: 1px solid #000;
+}
+
+.address-line + .address-line {
+  margin-top: 6px;
+}
+
+.empty-line {
+  min-height: 1em;
+}
+
+/* =========================================================
+   TABLE – BASE (applies to ALL tables)
+   ========================================================= */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 8px;
+}
+
+thead {
+  display: table-header-group;
+}
+
+th {
+  background: #f0f0f0;
+  text-align: center;
+}
+
+/* =========================================================
+   SLIP TABLE – STRUCTURE & TYPOGRAPHY
+   ========================================================= */
+.slip-table {
+  width: 100%;
+  margin: 0 auto;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 15.25px;
+}
+
+.slip-table tr {
+  page-break-inside: avoid;
+}
+
+.slip-table th,
+.slip-table td {
+  border: 1px solid #000;
+  min-height: 40px;
+  padding: 12px 3px;
+  vertical-align: middle;
+  text-align: center;
+}
+
+/* =========================================================
+   SLIP TABLE – HEADER ROW TUNING
+   ========================================================= */
+.slip-table thead th {
+  padding-top: 6px;
+  padding-bottom: 6px;
+  line-height: 1.15;
+}
+
+/* CUSTOMER ORDER special case */
+.customer-order-header {
+  padding-top: 6px;
+  padding-bottom: 6px;
+  line-height: 1.1;
+  white-space: normal;
+  vertical-align: middle;
+}
+
+/* Section headers inside tbody */
+.section-header th {
+  background: #f0f0f0;
+  font-weight: bold;
+}
+
+/* Description column */
+.slip-table td.description {
+  text-align: left;
+}
+
+/* Column widths */
+.col-20 { width: 20%; }
+.col-40 { width: 40%; }
+.col-60 { width: 60%; }
+
+/* =========================================================
+   COMMENTS
+   ========================================================= */
+.comments-wrapper {
+  font-family: Arial, Helvetica, sans-serif;
+  margin-top: 50px;
+  display: flex;
+  justify-content: center;
+}
+
+.comments {
+  width: 95%;
+}
+
+.comments-title {
+  font-weight: bold;
+  font-size: 18px;
+  margin-bottom: 15px;
+}
+
+.comment-line {
+  border-bottom: 1px solid #000;
+  font-size: 16px;
+}
+
+.comment-line + .comment-line {
+  margin-top: 8px;
+}
+
+/* =========================================================
+   FOOTER
+   ========================================================= */
+.thank-you {
+  margin-top: 48px;
+  text-align: center;
+  font-size: 22px;
+}

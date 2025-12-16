@@ -12,6 +12,7 @@ import addressesRouter from "./routes/addresses";
 import clerksRouter from "./routes/clerks";
 import palletTypesRouter from "./routes/palletTypes";
 import slipsRouter from "./routes/slips";
+import slipsPdfRouter from "./routes/slipsPdf";
 
 const app = express();
 
@@ -29,5 +30,6 @@ app.use("/api/clients/:clientId/addresses", addressesRouter);
 app.use("/api/clerks", clerksRouter);
 app.use("/api/pallet-types", palletTypesRouter);
 app.use("/api/slips", slipsRouter);
+app.use("/api/slips", slipsPdfRouter);
 
 export { app, prisma };
