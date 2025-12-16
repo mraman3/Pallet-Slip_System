@@ -288,6 +288,15 @@ const SlipForm: React.FC<SlipFormProps> = ({
         );
         onSaved?.(data);
 
+        // ✅ OPEN PDF ONLY ON CREATE
+        if (mode === "create" && data.id) {
+          window.open(
+            `/api/slips/${data.id}/pdf`,
+            "_blank",
+            "noopener,noreferrer"
+          );
+        }
+
         // optional: reset form after create
         if (mode === "create") {
           setSelectedClientId("");

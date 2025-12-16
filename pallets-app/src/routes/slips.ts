@@ -203,7 +203,10 @@ router.get("/", async (req: Request, res: Response) => {
     // -------------------------
     const data = await prisma.slip.findMany({
       where,
-      orderBy: { date: "desc" }, // REQUIRED for stable pagination
+      orderBy: [
+        { created_at: "desc" },
+        { id: "desc" }, // tie-breaker safety
+      ], // REQUIRED for stable pagination
       skip,
       take,
       include: {
