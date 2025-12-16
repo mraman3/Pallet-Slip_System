@@ -5,6 +5,8 @@ import React, { useEffect, useState } from "react";
 import SlipFilters from "./components/SlipFilters";
 import SlipResultsTable from "./components/SlipResultsTable";
 import EditSlipView from "./components/EditSlipView";
+import SlipPagination from "./components/SlipPagination";
+
 
 // Domain-specific hooks
 import { useSlipSorting } from "./hooks/useSlipSorting";
@@ -14,6 +16,8 @@ import { useClerks } from "./hooks/useClerks";
 
 // Types
 import type { SlipWithRelations } from "../../types/slipApi";
+
+const PAGE_SIZE = 25;
 
 /**
  * SlipSearchPage
@@ -55,6 +59,19 @@ const SlipSearchPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   // -------------------------
+  // PAGINATION STATE
+  // -------------------------
+  // Current page (1-based for UI clarity)
+  const [page, setPage] = useState(1);
+
+  // Total matching slips in DB (returned by backend)
+  const [total, setTotal] = useState(0);
+
+  // Derived pagination values
+  const offset = (page - 1) * PAGE_SIZE;
+  const totalPages = Math.ceil(total / PAGE_SIZE);
+
+  // -------------------------
   // EDIT STATE
   // -------------------------
   // When set, page switches from search → edit mode
@@ -75,18 +92,31 @@ const SlipSearchPage: React.FC = () => {
   });
 
   // Sorted view of search results (table headers control sort)
-  const { sortedResults, handleSort, sortIcon } =
-    useSlipSorting(results);
+  const { sortedResults, handleSort, sortIcon } = useSlipSorting(results);
 
   // -------------------------
   // SIDE EFFECTS
   // -------------------------
 
   // Initial page load → fetch recent slips
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     fetchSlips();
-  }, []);
+  }, [page]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [
+    slipNumber,
+    customerOrder,
+    shippedVia,
+    fromDate,
+    toDate,
+    selectedClientId,
+    selectedAddressId,
+    selectedPalletTypeId,
+    selectedClerkId,
+  ]);
+
 
   // When client changes, clear any previously selected address
   // (prevents stale ship_to_address_id from leaking into API query)
@@ -118,6 +148,8 @@ const SlipSearchPage: React.FC = () => {
       if (selectedClientId) params.set("client_id", String(selectedClientId));
       if (selectedAddressId) params.set("ship_to_address_id", String(selectedAddressId));
       if (selectedClerkId) params.set("clerk_id", String(selectedClerkId));
+      params.set("limit", String(PAGE_SIZE));
+      params.set("offset", String(offset));
 
       const res = await fetch(`/api/slips?${params.toString()}`);
       const data = await res.json();
@@ -126,7 +158,8 @@ const SlipSearchPage: React.FC = () => {
         throw new Error(data.error || "Failed to load slips");
       }
 
-      setResults(data);
+      setResults(data.data);
+      setTotal(data.total);
     } catch (e: any) {
       console.error("Error loading slips", e);
       setError(e.message || "Unexpected error loading slips");
@@ -235,12 +268,20 @@ const SlipSearchPage: React.FC = () => {
       {!loading && results.length === 0 && <p>No slips found.</p>}
 
       {results.length > 0 && (
-        <SlipResultsTable
-          slips={sortedResults}
-          onEdit={handleEdit}
-          onSort={handleSort}
-          sortIcon={sortIcon}
-        />
+        <>
+          <SlipResultsTable
+            slips={sortedResults}
+            onEdit={handleEdit}
+            onSort={handleSort}
+            sortIcon={sortIcon}
+          />
+
+          <SlipPagination
+            page={page}
+            totalPages={totalPages}
+            onPageChange={setPage}
+          />
+        </>
       )}
     </div>
   );

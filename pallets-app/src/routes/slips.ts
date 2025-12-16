@@ -6,7 +6,6 @@ const router = Router();
 
 /**
  * GET /api/slips
- * Optional filters via query params:
  * - slip_number: string
  * - client_id: number
  * - clerk_id: number
@@ -16,9 +15,30 @@ const router = Router();
  * - from_date, to_date: ISO dates for slip "date"
  * - from_date_shipped, to_date_shipped: ISO dates for "date_shipped"
  * - limit: max number of results (default 100)
+ *
+ * Returns a paginated list of slips with optional filters.
+ *
+ * Supports:
+ * - Text filters (slip number, customer order)
+ * - Foreign key filters (client, clerk, ship-to, pallet type)
+ * - Date range filters (date, date_shipped)
+ * - Pagination via limit + offset
+ *
+ * Response shape:
+ * {
+ *   data: SlipWithRelations[],
+ *   total: number
+ * }
+ *
+ * IMPORTANT:
+ * - `total` represents the total number of matching slips WITHOUT pagination
+ * - `data` represents only the current page
  */
 router.get("/", async (req: Request, res: Response) => {
   try {
+    // -------------------------
+    // Extract query parameters
+    // -------------------------
     const {
       slip_number,
       client_id,
@@ -32,14 +52,25 @@ router.get("/", async (req: Request, res: Response) => {
       to_date_shipped,
       pallet_type_id,
       limit,
+      offset,
     } = req.query as Record<string, string>;
 
+    // -------------------------
+    // Build Prisma WHERE clause
+    // -------------------------
+    // This object accumulates all optional filters.
+    // Only provided filters are applied.
     const where: Prisma.SlipWhereInput = {};
 
+    // Slip number substring search (case-insensitive)
     if (slip_number) {
-      where.slip_number = { contains: slip_number, mode: "insensitive" };;
+      where.slip_number = {
+        contains: slip_number,
+        mode: "insensitive",
+      };
     }
 
+    // Client filter
     if (client_id) {
       const id = Number(client_id);
       if (Number.isNaN(id)) {
@@ -48,6 +79,7 @@ router.get("/", async (req: Request, res: Response) => {
       where.client_id = id;
     }
 
+    // Clerk filter
     if (clerk_id) {
       const id = Number(clerk_id);
       if (Number.isNaN(id)) {
@@ -56,6 +88,7 @@ router.get("/", async (req: Request, res: Response) => {
       where.clerk_id = id;
     }
 
+    // Ship-to address filter
     if (ship_to_address_id) {
       const id = Number(ship_to_address_id);
       if (Number.isNaN(id)) {
@@ -66,27 +99,33 @@ router.get("/", async (req: Request, res: Response) => {
       where.ship_to_address_id = id;
     }
 
+    // Shipped via filter (restricted to known values)
     if (shipped_via) {
       const valid = ["BPI", "P/U"];
       if (!valid.includes(shipped_via)) {
         return res.status(400).json({
-          error: "shipped_via must be 'BPI' or 'P/U'"
+          error: "shipped_via must be 'BPI' or 'P/U'",
         });
       }
       where.shipped_via = shipped_via;
     }
 
+    // Customer order substring search
     if (customer_order) {
-      // substring search
       where.customer_order = {
         contains: customer_order,
         mode: "insensitive",
       };
     }
 
-    // Date filter for main slip date
+    // -------------------------
+    // Date range filters
+    // -------------------------
+
+    // Filter by slip date
     if (from_date || to_date) {
       const dateFilter: Prisma.DateTimeFilter = {};
+
       if (from_date) {
         const d = new Date(from_date);
         if (Number.isNaN(d.getTime())) {
@@ -94,6 +133,7 @@ router.get("/", async (req: Request, res: Response) => {
         }
         dateFilter.gte = d;
       }
+
       if (to_date) {
         const d = new Date(to_date);
         if (Number.isNaN(d.getTime())) {
@@ -101,29 +141,35 @@ router.get("/", async (req: Request, res: Response) => {
         }
         dateFilter.lte = d;
       }
+
       where.date = dateFilter;
     }
 
-    // Date filter for date_shipped
+    // Filter by shipped date (nullable field)
     if (from_date_shipped || to_date_shipped) {
-      const dateShippedFilter: Prisma.DateTimeNullableFilter = {};
+      const shippedFilter: Prisma.DateTimeNullableFilter = {};
+
       if (from_date_shipped) {
         const d = new Date(from_date_shipped);
         if (Number.isNaN(d.getTime())) {
           return res.status(400).json({ error: "Invalid from_date_shipped" });
         }
-        dateShippedFilter.gte = d;
+        shippedFilter.gte = d;
       }
+
       if (to_date_shipped) {
         const d = new Date(to_date_shipped);
         if (Number.isNaN(d.getTime())) {
           return res.status(400).json({ error: "Invalid to_date_shipped" });
         }
-        dateShippedFilter.lte = d;
+        shippedFilter.lte = d;
       }
-      where.date_shipped = dateShippedFilter;
+
+      where.date_shipped = shippedFilter;
     }
 
+    // Filter slips that contain at least one item
+    // with the specified pallet type
     if (pallet_type_id) {
       const id = Number(pallet_type_id);
       if (Number.isNaN(id)) {
@@ -137,12 +183,28 @@ router.get("/", async (req: Request, res: Response) => {
       };
     }
 
+    // -------------------------
+    // Pagination parameters
+    // -------------------------
+    // Defaults ensure safety and backward compatibility.
+    const take = Math.min(Number(limit) || 25, 100); // max page size = 100
+    const skip = Math.max(Number(offset) || 0, 0);   // never allow negative offset
 
-    const take = limit ? Math.min(Number(limit) || 100, 500) : 100;
+    // -------------------------
+    // Query total count
+    // -------------------------
+    // IMPORTANT:
+    // This query does NOT use take/skip.
+    // It represents the full result set size.
+    const total = await prisma.slip.count({ where });
 
-    const slips = await prisma.slip.findMany({
+    // -------------------------
+    // Query paginated data
+    // -------------------------
+    const data = await prisma.slip.findMany({
       where,
-      orderBy: { date: "desc" },
+      orderBy: { date: "desc" }, // REQUIRED for stable pagination
+      skip,
       take,
       include: {
         client: true,
@@ -156,12 +218,19 @@ router.get("/", async (req: Request, res: Response) => {
       },
     });
 
-    res.json(slips);
+    // -------------------------
+    // Final response
+    // -------------------------
+    res.json({
+      data,
+      total,
+    });
   } catch (error) {
     console.error("Error listing slips", error);
     res.status(500).json({ error: "Internal server error" });
   }
 });
+
 
 
 /**
