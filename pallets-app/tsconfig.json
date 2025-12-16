@@ -4,28 +4,23 @@
     // File Layout
     "rootDir": "./src",
     "outDir": "./dist",
-
     // Environment Settings
     // See also https://aka.ms/tsconfig/module
     "module": "commonjs",
     "target": "es2019",
-	"moduleResolution": "node",
-	
-    "types": [],
+    "moduleResolution": "node",
+    "types": ["node"],
     // For nodejs:
     // "lib": ["esnext"],
     // "types": ["node"],
     // and npm install -D @types/node
-
     // Other Outputs
     "sourceMap": true,
     "declaration": true,
     "declarationMap": true,
-
     // Stricter Typechecking Options
     "noUncheckedIndexedAccess": true,
     "exactOptionalPropertyTypes": true,
-
     // Style Options
     // "noImplicitReturns": true,
     // "noImplicitOverride": true,
@@ -33,16 +28,21 @@
     // "noUnusedParameters": true,
     // "noFallthroughCasesInSwitch": true,
     // "noPropertyAccessFromIndexSignature": true,
-
     // Recommended Options
     "strict": true,
-	  "esModuleInterop": true,
+    "esModuleInterop": true,
     "jsx": "react-jsx",
     "isolatedModules": true,
     "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
     "skipLibCheck": true,
   },
-  "include": ["src/**/*"],        // Only compile source files
-  "exclude": ["node_modules", "dist", "prisma.config.ts"] // Do NOT compile prisma.config.ts
+  "include": [
+    "src/**/*"
+  ], // Only compile source files
+  "exclude": [
+    "node_modules",
+    "dist",
+    "prisma.config.ts"
+  ] // Do NOT compile prisma.config.ts
 }
