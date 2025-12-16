@@ -1,6 +1,8 @@
 /* =========================================================
-   FONTS & PAGE
+   FONTS & PAGE SETUP
    ========================================================= */
+
+/* Custom Courier font used for slip title, numbers, footer */
 @font-face {
   font-family: "CourierStdBold";
   src: url(__COURIER_STD_FONT__);
@@ -8,168 +10,207 @@
   font-style: normal;
 }
 
+/* Print page configuration */
 @page {
-  size: Letter;
-  margin: 0.75in;
+  size: A4;
+  margin: 0.48in;
 }
 
 /* =========================================================
    GLOBAL RESET
    ========================================================= */
+
+/* Remove default browser spacing */
 body {
   margin: 0;
   padding: 0;
 }
 
 /* =========================================================
-   HEADER
+   HEADER LAYOUT
    ========================================================= */
+
+/*
+  Top header container:
+  - Left: logo + company info overlay
+  - Right: slip title + slip number
+*/
 .header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin: 10px 0 70px 0;
+  margin: 10px 0 74.6px 0;
   page-break-inside: avoid;
 }
 
-/* LEFT */
+/* =========================================================
+   HEADER – LEFT SIDE (LOGO + COMPANY INFO)
+   ========================================================= */
+
 .header-left {
   position: relative;
   width: 400px;
-  margin-left: -25px;
-  margin-top: -10px;
 }
 
+/* Company logo image */
 .company-logo {
   width: 100%;
   height: auto;
   display: block;
+  margin-top: -3px;
 }
 
+/*
+  Company address/info block
+  Positioned over the logo intentionally
+*/
 .company-info {
   position: absolute;
   left: 100px;
   top: 110px;
+  margin-left: 25px;
+
   text-align: center;
   font-family: "Times New Roman", serif;
   font-size: 14px;
   line-height: 1.2;
-  margin-left: 25px;
 }
 
-/* RIGHT */
+/* =========================================================
+   HEADER – RIGHT SIDE (SLIP TITLE + NUMBER)
+   ========================================================= */
+
 .header-right {
   text-align: right;
-  margin-top: 40px;
+  margin-top: 47.5px;
 }
 
+/* Grey boxed "SLIP" title container */
 .slip-title-box {
   display: flex;
   align-items: center;
-  height: 40px;
-  padding: 0 18px;
+  justify-content: center;
+
+  line-height: 1;
   border: 1.5px solid #000;
   background: #e4e4e4;
 }
 
-.slip-title,
-.slip-number,
-.thank-you {
-  font-family: "CourierStdBold", monospace;
-  letter-spacing: 1.5px;
-}
-
+/* "SLIP" text */
 .slip-title {
-  font-size: 25px;
+  font-family: "CourierStdBold", monospace;
+  font-size: 28px;
+  letter-spacing: 0px;
+  margin: 6.85px 14.5px -3px 14px;
 }
 
+/* Red slip number */
 .slip-number {
-  margin-top: 10px;
-  font-size: 22px;
+  font-family: "CourierStdBold", monospace;
+  font-size: 28px;
+  letter-spacing: 0px;
   color: red;
+  margin: 16.158px 0.7px 0px 0px;
 }
 
 /* =========================================================
-   SOLD / SHIP
+   SOLD TO / SHIP TO SECTION
    ========================================================= */
+
 .sold-ship {
   display: flex;
-  justify-content: center;
-  gap: 25px;
-  margin-bottom: 36px;
+  gap: 31px;
+  margin: 0px 0px 56px 22.5px;
   page-break-inside: avoid;
+
+  font-family: Arial, Helvetica, sans-serif;
 }
 
+/* Wrapper for each address block */
 .address-block {
   display: flex;
   align-items: flex-start;
-  gap: 10px;
+  gap: 16px;
 }
 
+/* "SOLD TO" / "SHIP TO" labels */
 .address-label {
   font-weight: bold;
-  font-size: 18px;
+  font-size: 16px;
   line-height: 1;
 }
 
+/* Right-aligned label text (multi-line) */
 .label-right {
   text-align: right;
+  line-height: 1.5;
 }
 
+/* Address field container */
 .address-fields {
-  width: 245px;
-  font-size: 17px;
+  width: 260px;
+  font-size: 16px;
 }
 
+/* Individual address lines */
 .address-line {
   border-bottom: 1px solid #000;
 }
 
+/* Vertical spacing between address lines */
 .address-line + .address-line {
   margin-top: 6px;
 }
 
+/* Placeholder empty lines */
 .empty-line {
-  min-height: 1em;
+  min-height: 13px;
 }
 
 /* =========================================================
-   TABLE – BASE (applies to ALL tables)
+   TABLE – GLOBAL BASE STYLES
+   Applies to ALL tables on the page
    ========================================================= */
+
 table {
   width: 100%;
   border-collapse: collapse;
   margin-top: 8px;
 }
 
+/* Ensures table headers repeat correctly on page breaks */
 thead {
   display: table-header-group;
 }
 
+/* Default table header styling */
 th {
   background: #f0f0f0;
   text-align: center;
 }
 
 /* =========================================================
-   SLIP TABLE – STRUCTURE & TYPOGRAPHY
+   SLIP TABLE – CORE STYLING
    ========================================================= */
+
 .slip-table {
   width: 100%;
   margin: 0 auto;
+
   font-family: Arial, Helvetica, sans-serif;
-  font-size: 15.25px;
+  font-size: 16px;
 }
 
+/* Prevent rows from splitting across pages */
 .slip-table tr {
   page-break-inside: avoid;
 }
 
+/* Cell styling */
 .slip-table th,
 .slip-table td {
   border: 1px solid #000;
-  min-height: 40px;
-  padding: 12px 3px;
+  padding: 14px 2px;
   vertical-align: middle;
   text-align: center;
 }
@@ -177,71 +218,77 @@ th {
 /* =========================================================
    SLIP TABLE – HEADER ROW TUNING
    ========================================================= */
+
 .slip-table thead th {
   padding-top: 6px;
-  padding-bottom: 6px;
+  padding-bottom: 2px;
   line-height: 1.15;
 }
 
-/* CUSTOMER ORDER special case */
-.customer-order-header {
-  padding-top: 6px;
-  padding-bottom: 6px;
-  line-height: 1.1;
-  white-space: normal;
-  vertical-align: middle;
-}
-
-/* Section headers inside tbody */
+/* Section header rows inside tbody */
 .section-header th {
+  padding: 13px 2px;
+  line-height: 1.15;
   background: #f0f0f0;
   font-weight: bold;
 }
 
-/* Description column */
+/* Left-aligned description column */
 .slip-table td.description {
   text-align: left;
 }
 
-/* Column widths */
+/* Column width helpers */
 .col-20 { width: 20%; }
 .col-40 { width: 40%; }
 .col-60 { width: 60%; }
 
 /* =========================================================
-   COMMENTS
+   COMMENTS SECTION
    ========================================================= */
+
 .comments-wrapper {
-  font-family: Arial, Helvetica, sans-serif;
-  margin-top: 50px;
+  margin-top: 50.5px;
   display: flex;
   justify-content: center;
+
+  font-family: Arial, Helvetica, sans-serif;
 }
 
+/* Inner comments container */
 .comments {
-  width: 95%;
+  width: 90.2%;
 }
 
+/* "COMMENTS" title */
 .comments-title {
   font-weight: bold;
-  font-size: 18px;
-  margin-bottom: 15px;
+  font-size: 16px;
+  margin-bottom: 2px;
 }
 
+/* Individual comment lines */
 .comment-line {
   border-bottom: 1px solid #000;
   font-size: 16px;
+  line-height: 2.05;
 }
 
+/* Stacking spacing between lines */
 .comment-line + .comment-line {
-  margin-top: 8px;
+  margin-top: 0px;
 }
 
 /* =========================================================
    FOOTER
    ========================================================= */
+
+/* Thank-you footer text */
 .thank-you {
-  margin-top: 48px;
+  margin-top: 42px;
   text-align: center;
-  font-size: 22px;
+
+  font-family: "CourierStdBold", monospace;
+  font-size: 21px;
+  letter-spacing: 0px;
 }
