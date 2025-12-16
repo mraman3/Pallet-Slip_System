@@ -36,17 +36,31 @@ export const buildSlipHtml = (slip: any): string => {
   html = html.replace("<!-- STYLE_BLOCK -->", `<style>${css}</style>`);
 
   // 5. Build item rows
-  const itemRows = slip.items
-    .map((i: any) => `
-      <tr>
-        <td class="col-20">${i.qty_ordered}</td>
-        <td class="col-20">${i.qty_shipped}</td>
-        <td class="col-60" colspan="3" style="text-align:left;">
-          ${i.pallet_type?.name ?? ""}
-        </td>
-      </tr>
-    `)
-    .join("");
+  const MIN_ROWS = 1;
+
+  const realRows = slip.items.map((i: any) => `
+  <tr>
+    <td class="col-20">${i.qty_ordered ?? ""}</td>
+    <td class="col-20">${i.qty_shipped ?? ""}</td>
+    <td class="col-60" colspan="3" style="text-align:left;">
+      ${i.pallet_type?.name ?? ""}
+    </td>
+  </tr>
+`);
+
+  const emptyRow = `
+  <tr>
+    <td class="col-20">&nbsp;</td>
+    <td class="col-20">&nbsp;</td>
+    <td class="col-60" colspan="3">&nbsp;</td>
+  </tr>
+`;
+
+  const itemRows =
+    realRows.join("") +
+    Array(Math.max(0, MIN_ROWS - realRows.length))
+      .fill(emptyRow)
+      .join("");
 
   // 6. Replace placeholders
   html = html
