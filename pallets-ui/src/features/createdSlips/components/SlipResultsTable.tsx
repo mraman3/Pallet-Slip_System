@@ -106,6 +106,15 @@ const SlipResultsTable: React.FC<Props> = ({
               <button type="button" onClick={() => onEdit(s.id)}>
                 Edit
               </button>
+
+              <button
+                type="button"
+                onClick={() =>
+                  window.open(`/api/slips/${s.id}/pdf`, "_blank", "noopener,noreferrer")
+                }
+              >
+                Print
+              </button>
             </td>
           </tr>
         ))}
