@@ -27,11 +27,11 @@ type UiSlipItem = {
   qty_shipped: string;
 };
 
-const emptyItem: UiSlipItem = {
+const emptyItem = (): UiSlipItem => ({
   pallet_type_id: "",
   qty_ordered: "",
   qty_shipped: "",
-};
+});
 
 const toYMD = (iso: string) => {
   // "2025-12-14T..." -> "2025-12-14"
@@ -65,7 +65,27 @@ const SlipForm: React.FC<SlipFormProps> = ({
   const [comments2, setComments2] = useState("");
 
   // single line item for now
-  const [item, setItem] = useState<UiSlipItem>(emptyItem);
+  const [items, setItems] = useState<UiSlipItem[]>([]);
+
+  const updateItem = <K extends keyof UiSlipItem>(
+    index: number,
+    key: K,
+    value: UiSlipItem[K]
+  ) => {
+    setItems((prev) => {
+      const copy = [...prev];
+      copy[index] = { ...copy[index], [key]: value };
+      return copy;
+    });
+  };
+
+  const addItem = () => {
+    setItems((prev) => [...prev, emptyItem()]);
+  };
+
+  const removeItem = (index: number) => {
+    setItems((prev) => prev.filter((_, i) => i !== index));
+  };
 
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
@@ -202,16 +222,22 @@ const SlipForm: React.FC<SlipFormProps> = ({
 
     setComments1(initialSlip.comments_line1 ?? "");
     setComments2(initialSlip.comments_line2 ?? "");
+  }, [mode, initialSlip]);
 
-    const first = initialSlip.items?.[0];
-    if (first) {
-      setItem({
-        pallet_type_id: first.pallet_type_id,
-        qty_ordered: first.qty_ordered ?? "",
-        qty_shipped: first.qty_shipped ?? "",
-      });
-    } else {
-      setItem(emptyItem);
+  // --- Prefill line items in edit mode ---
+  useEffect(() => {
+    if (mode === "edit" && initialSlip) {
+      setItems(
+        initialSlip.items.map((i) => ({
+          pallet_type_id: i.pallet_type_id,
+          qty_ordered: i.qty_ordered ?? "",
+          qty_shipped: i.qty_shipped ?? "",
+        }))
+      );
+    }
+
+    if (mode === "create") {
+      setItems([emptyItem()]);
     }
   }, [mode, initialSlip]);
 
@@ -231,12 +257,23 @@ const SlipForm: React.FC<SlipFormProps> = ({
         !selectedAddressId ||
         !selectedClerkId ||
         !date ||
-        !customerOrder ||
-        !item.pallet_type_id ||
-        !item.qty_ordered ||
-        !item.qty_shipped
+        !customerOrder
       ) {
         setError("Please fill in all required fields.");
+        setSubmitting(false);
+        return;
+      }
+
+      // Validate all line items
+      const hasInvalidItems = items.some(
+        (i) =>
+          !i.pallet_type_id ||
+          !i.qty_ordered.trim() ||
+          !i.qty_shipped.trim()
+      );
+
+      if (hasInvalidItems) {
+        setError("All pallet items must be filled in.");
         setSubmitting(false);
         return;
       }
@@ -251,13 +288,11 @@ const SlipForm: React.FC<SlipFormProps> = ({
         shipped_via: shippedVia,
         comments_line1: comments1 || null,
         comments_line2: comments2 || null,
-        items: [
-          {
-            pallet_type_id: item.pallet_type_id,
-            qty_ordered: String(item.qty_ordered),
-            qty_shipped: String(item.qty_shipped),
-          },
-        ],
+        items: items.map((i) => ({
+          pallet_type_id: i.pallet_type_id,
+          qty_ordered: String(i.qty_ordered),
+          qty_shipped: String(i.qty_shipped),
+        })),
       };
 
       const url =
@@ -308,7 +343,7 @@ const SlipForm: React.FC<SlipFormProps> = ({
           setDateShipped("");
           setComments1("");
           setComments2("");
-          setItem(emptyItem);
+          setItems([emptyItem()]);
         }
       }
     } catch (err) {
@@ -355,13 +390,12 @@ const SlipForm: React.FC<SlipFormProps> = ({
         setShippedVia={setShippedVia}
       />
 
-      {/* LineItemSection expects your old SlipItem shape.
-          If your LineItemSection uses numbers, update it to accept strings too.
-          For now we pass compatible fields. */}
       <LineItemSection
-        item={item as any}
-        setItem={setItem as any}
+        items={items}
         palletTypes={palletTypes}
+        onChange={updateItem}
+        onAdd={addItem}
+        onRemove={removeItem}
       />
 
       <CommentsSection
