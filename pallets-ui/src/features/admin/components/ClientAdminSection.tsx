@@ -10,12 +10,17 @@ const emptyForm = {
   postal: "",
 };
 
-const ClientAdminSection: React.FC = () => {
+type Props = {
+  onClientChanged?: () => void;
+};
+
+const ClientAdminSection: React.FC<Props> = ({ onClientChanged }) => {
+
   // ---- SHARED STATE ----
   const [clients, setClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(false);
   const [showInactive, setShowInactive] = useState(false);
-  
+
 
   // tabs: "add" or "edit"
   const [activeTab, setActiveTab] = useState<"add" | "edit">("add");
@@ -60,23 +65,23 @@ const ClientAdminSection: React.FC = () => {
 
   // Unified client query: handles search + inactive filter
   useEffect(() => {
-  const controller = new AbortController();
+    const controller = new AbortController();
 
-  const isSearching = editSearch.trim().length > 0;
+    const isSearching = editSearch.trim().length > 0;
 
-  const timeout = setTimeout(() => {
-    fetchClients(
-      isSearching ? editSearch : "",
-      showInactive,
-      controller.signal
-    );
-  }, isSearching ? 300 : 0);
+    const timeout = setTimeout(() => {
+      fetchClients(
+        isSearching ? editSearch : "",
+        showInactive,
+        controller.signal
+      );
+    }, isSearching ? 300 : 0);
 
-  return () => {
-    controller.abort();
-    clearTimeout(timeout);
-  };
-}, [editSearch, showInactive]);
+    return () => {
+      controller.abort();
+      clearTimeout(timeout);
+    };
+  }, [editSearch, showInactive]);
 
 
   // ---- ADD CLIENT HANDLERS ----
@@ -124,6 +129,7 @@ const ClientAdminSection: React.FC = () => {
         setAddForm(emptyForm);
         // refresh the sidebar list
         await fetchClients("", showInactive);
+        onClientChanged?.();
       }
     } catch (err) {
       console.error("Error creating client", err);
@@ -202,6 +208,7 @@ const ClientAdminSection: React.FC = () => {
         setEditMessage(`Client "${data.name}" updated.`);
         // refresh sidebar and maybe editResults
         await fetchClients("", showInactive);
+        onClientChanged?.();
       }
     } catch (err) {
       console.error("Error updating client", err);
@@ -228,6 +235,7 @@ const ClientAdminSection: React.FC = () => {
 
       // refresh sidebar list
       await fetchClients("", showInactive);
+      onClientChanged?.();
     } catch (err) {
       console.error("Error toggling client active", err);
       alert("Unexpected error updating client status.");

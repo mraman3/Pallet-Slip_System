@@ -5,33 +5,35 @@ import PalletAdminSection from "./components/PalletAdminSection";
 import ClerkAdminSection from "./components/ClerkAdminSection";
 
 const AdminPage: React.FC = () => {
+  const [clientVersion, setClientVersion] = React.useState(0);
+
+  const refreshClientsEverywhere = () => {
+    setClientVersion((v) => v + 1);
+  };
+
   return (
     <div>
-      <h2 style={{ marginBottom: 0 }}>Admin – Master Data</h2>
-      <p style={{ marginBottom: 65, marginTop: 0}}>
-        Manage clients, ship-to locations, clerks, and pallet types.
-      </p>
+      <h2>Admin – Master Data</h2>
 
-      <section style={{ marginBottom: 50 }}>
-        <ClientAdminSection />
+      <section>
+        <ClientAdminSection onClientChanged={refreshClientsEverywhere} />
       </section>
 
-      <section style={{ marginBottom: 50 }}>
-        <AddressAdminSection />
+      <section>
+        <AddressAdminSection clientVersion={clientVersion} />
       </section>
-	  
-      <section style={{ marginBottom: 50 }}>
+
+      <section>
         <PalletAdminSection />
       </section>
-	  
-	  <section>
+
+      <section>
         <ClerkAdminSection />
       </section>
-		
-	</div>
+    </div>
   );
 };
 
+
 export default AdminPage;
 
-     

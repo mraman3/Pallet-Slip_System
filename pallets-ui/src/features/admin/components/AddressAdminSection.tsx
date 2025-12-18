@@ -9,7 +9,11 @@ const emptyAddressForm = {
   postal: "",
 };
 
-const AddressAdminSection: React.FC = () => {
+type Props = {
+  clientVersion: number;
+};
+
+const AddressAdminSection: React.FC<Props> = ({ clientVersion }) => {
   const [activeTab, setActiveTab] = useState<"add" | "edit">("add");
 
   // --- client selection (required) ---
@@ -60,13 +64,13 @@ const AddressAdminSection: React.FC = () => {
     const controller = new AbortController();
     fetchClients("", showInactiveClients, controller.signal);
     return () => controller.abort();
-  }, []);
+  }, [clientVersion]);
 
   // debounce client search
   useEffect(() => {
     const controller = new AbortController();
     const t = setTimeout(() => {
-      fetchClients(clientSearch, showInactiveClients,controller.signal);
+      fetchClients(clientSearch, showInactiveClients, controller.signal);
     }, 300);
     return () => {
       controller.abort();
@@ -371,7 +375,7 @@ const AddressAdminSection: React.FC = () => {
         />
       </div>
 
-      <div style={{ display: "flex", gap: 24, alignItems: "center"}}>
+      <div style={{ display: "flex", gap: 24, alignItems: "center" }}>
         {/* Left: tabs + forms */}
         <div style={{ flex: 1, minWidth: 320 }}>
           <div style={{ marginBottom: 12, display: "flex", gap: 8 }}>
