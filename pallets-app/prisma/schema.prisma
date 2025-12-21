@@ -1,39 +1,37 @@
-datasource db {
-  provider = "postgresql"
-}
-
 generator client {
   provider = "prisma-client-js"
 }
 
-model Client {
-  id               Int              @id @default(autoincrement())
-  name             String
-  address          String
-  city             String
-  province         String
-  postal           String
-  active           Boolean          @default(true)
-  created_at       DateTime         @default(now())
-  updated_at       DateTime         @updatedAt
+datasource db {
+  provider = "postgresql"
+}
 
-  addresses        ClientAddress[]
-  slips            Slip[]
+model Client {
+  id         Int             @id @default(autoincrement())
+  name       String
+  address    String
+  city       String
+  province   String
+  postal     String
+  active     Boolean         @default(true)
+  created_at DateTime        @default(now())
+  updated_at DateTime        @updatedAt
+  addresses  ClientAddress[]
+  slips      Slip[]
 }
 
 model ClientAddress {
-  id            Int       @id @default(autoincrement())
+  id            Int      @id @default(autoincrement())
   client_id     Int
   location_name String
   address       String
   city          String
   province      String
   postal        String
-  active        Boolean   @default(true)
-  created_at    DateTime  @default(now())
-  updated_at    DateTime  @updatedAt
-
-  client        Client    @relation(fields: [client_id], references: [id])
+  active        Boolean  @default(true)
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+  client        Client   @relation(fields: [client_id], references: [id])
   slips         Slip[]
 }
 
@@ -43,7 +41,6 @@ model Clerk {
   active     Boolean  @default(true)
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
-
   slips      Slip[]
 }
 
@@ -53,7 +50,6 @@ model PalletType {
   active     Boolean    @default(true)
   created_at DateTime   @default(now())
   updated_at DateTime   @updatedAt
-
   items      SlipItem[]
 }
 
@@ -63,23 +59,22 @@ model SlipCounter {
 }
 
 model Slip {
-  id                 Int            @id @default(autoincrement())
-  slip_number        String         @unique
+  id                 Int           @id @default(autoincrement())
+  slip_number        String        @unique
   client_id          Int
   ship_to_address_id Int
   date               DateTime
   clerk_id           Int
-  customer_order     String
+  customer_order     String?
   date_shipped       DateTime?
   shipped_via        String
   comments_line1     String?
   comments_line2     String?
-  created_at         DateTime       @default(now())
-  updated_at         DateTime       @updatedAt
-
-  client             Client         @relation(fields: [client_id], references: [id])
-  ship_to_address    ClientAddress  @relation(fields: [ship_to_address_id], references: [id])
-  clerk              Clerk          @relation(fields: [clerk_id], references: [id])
+  created_at         DateTime      @default(now())
+  updated_at         DateTime      @updatedAt
+  clerk              Clerk         @relation(fields: [clerk_id], references: [id])
+  client             Client        @relation(fields: [client_id], references: [id])
+  ship_to_address    ClientAddress @relation(fields: [ship_to_address_id], references: [id])
   items              SlipItem[]
 }
 
@@ -91,7 +86,6 @@ model SlipItem {
   qty_shipped    String
   created_at     DateTime   @default(now())
   updated_at     DateTime   @updatedAt
-
-  slip           Slip       @relation(fields: [slip_id], references: [id])
   pallet_type    PalletType @relation(fields: [pallet_type_id], references: [id])
+  slip           Slip       @relation(fields: [slip_id], references: [id])
 }
