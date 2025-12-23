@@ -42,14 +42,16 @@ RUN npm install --include=dev
 # -------- Copy source --------
 COPY . .
 
+# -------- Generate Prisma Client --------
+RUN npx prisma generate
+
 # -------- Build TypeScript --------
 RUN npm run build
 
-# -------- Runtime env --------
+# -------- Runtime --------
 ENV NODE_ENV=production
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable
 
-EXPOSE 3000
+EXPOSE 4000
 
-# -------- Start app --------
-CMD ["sh", "-c", "npx prisma generate && node dist/index.js"]
+CMD ["node", "dist/index.js"]
