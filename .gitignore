@@ -47,7 +47,6 @@ lerna-debug.log*
 # ───────────────────────────────────────────
 pallets-app/prisma/*.db
 pallets-app/prisma/*.sqlite
-pallets-app/prisma/migrations/
 node_modules/.prisma/
 
 
