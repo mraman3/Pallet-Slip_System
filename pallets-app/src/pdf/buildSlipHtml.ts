@@ -1,28 +1,41 @@
 import fs from "fs";
 import path from "path";
 
+const resolveFile = (...parts: string[]) => {
+  const candidates = [
+    path.join(__dirname, ...parts),                   // dist/pdf/*
+    path.join(process.cwd(), "src", "pdf", ...parts), // src/pdf/*
+    path.join(process.cwd(), "dist", "pdf", ...parts) // dist/pdf/*
+  ];
+
+  for (const p of candidates) {
+    if (fs.existsSync(p)) return p;
+  }
+
+  throw new Error("PDF Asset Not Found: " + parts.join("/"));
+};
+
 export const buildSlipHtml = (slip: any): string => {
-  const baseDir = __dirname;
 
   // 1. Load HTML & CSS templates
   let html = fs.readFileSync(
-    path.join(baseDir, "templates", "slip.html"),
+    resolveFile("templates", "slip.html"),
     "utf-8"
   );
 
   let css = fs.readFileSync(
-    path.join(baseDir, "templates", "slip.css"),
+    resolveFile("templates", "slip.css"),
     "utf-8"
   );
 
   // 2. Load assets (logo + font)
   const logoBase64 = fs.readFileSync(
-    path.join(baseDir, "assets", "brampton-pallet-logo.webp"),
+    resolveFile("assets", "brampton-pallet-logo.webp"),
     "base64"
   );
 
   const courierStdBase64 = fs.readFileSync(
-    path.join(baseDir, "assets", "fonts", "CourierStd-Bold.otf"),
+    resolveFile("assets", "fonts", "CourierStd-Bold.otf"),
     "base64"
   );
 
