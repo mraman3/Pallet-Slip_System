@@ -14,7 +14,10 @@ node_modules/
 pallets-app/node_modules/
 pallets-ui/node_modules/
 
-
+# ───────────────────────────────────────────
+# Data FILES 
+# ───────────────────────────────────────────
+pallets-app/Cleaned Data
 # ───────────────────────────────────────────
 # BUILD OUTPUT (BACKEND + FRONTEND)
 # ───────────────────────────────────────────
