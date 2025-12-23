@@ -8,7 +8,9 @@ export default defineConfig({
   schema: "prisma/schema.prisma",
 
   // required for migrate in Prisma 7
+ // but the actual connection is provided at runtime via the adapter
   datasource: {
-    url: env("DATABASE_URL"),
+    // do NOT resolve env at build time
+    url: undefined,
   },
 });
