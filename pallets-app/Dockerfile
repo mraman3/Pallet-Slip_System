@@ -42,20 +42,14 @@ RUN npm install --include=dev
 # -------- Copy source --------
 COPY . .
 
-# ---- Prisma build-time env (DUMMY) ----
-ARG DATABASE_URL="postgresql://user:pass@localhost:5432/db"
-ENV DATABASE_URL=${DATABASE_URL}
-
-# -------- Generate Prisma Client --------
+# Generate Prisma Client (no DB needed)
 RUN npx prisma generate
 
-# -------- Build TypeScript --------
+# Build TypeScript
 RUN npm run build
 
-# -------- Runtime --------
 ENV NODE_ENV=production
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable
 
-EXPOSE 4000
-
+EXPOSE 3000
 CMD ["node", "dist/index.js"]
