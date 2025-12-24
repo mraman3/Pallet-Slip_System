@@ -1,4 +1,8 @@
 import { useEffect, useState } from "react";
+
+//import api 
+import { API_BASE } from "../../../config/api";
+
 import type { PalletType } from "../../../types/domain";
 
 /**
@@ -39,7 +43,7 @@ export const usePalletTypes = () => {
         const params = new URLSearchParams();
         params.set("includeInactive", "true");
 
-        const res = await fetch(`/api/pallet-types?${params.toString()}`);
+        const res = await fetch(`${API_BASE}/pallet-types?${params.toString()}`);
         const data = await res.json();
 
         if (!res.ok) {

@@ -1,5 +1,9 @@
 // src/features/admin/components/ClerkAdminSection.tsx
 import React, { useEffect, useState } from "react";
+
+//import api
+import { API_BASE } from "../../../config/api";
+
 import type { Clerk } from "../../../types/domain";
 
 const emptyClerkForm = {
@@ -41,7 +45,7 @@ const ClerkAdminSection: React.FC = () => {
       if (searchValue.trim()) params.set("search", searchValue.trim());
       if (includeInactive) params.set("includeInactive", "true");
 
-      const res = await fetch(`/api/clerks?${params.toString()}`, { signal });
+      const res = await fetch(`${API_BASE}/clerks?${params.toString()}`, { signal });
       const data: Clerk[] = await res.json();
       setClerks(data);
     } catch (err) {
@@ -97,7 +101,7 @@ const ClerkAdminSection: React.FC = () => {
         return;
       }
 
-      const res = await fetch("/api/clerks", {
+      const res = await fetch(`${API_BASE}/clerks`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: name.trim() }),
@@ -161,7 +165,7 @@ const ClerkAdminSection: React.FC = () => {
         return;
       }
 
-      const res = await fetch(`/api/clerks/${selectedClerkId}`, {
+      const res = await fetch(`${API_BASE}/clerks/${selectedClerkId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: name.trim() }),
@@ -187,7 +191,7 @@ const ClerkAdminSection: React.FC = () => {
   const toggleClerkActive = async (clerkId: number, makeActive: boolean) => {
     try {
       const res = await fetch(
-        `/api/clerks/${clerkId}/${makeActive ? "enable" : "disable"}`,
+        `${API_BASE}/clerks/${clerkId}/${makeActive ? "enable" : "disable"}`,
         { method: "PATCH" }
       );
 

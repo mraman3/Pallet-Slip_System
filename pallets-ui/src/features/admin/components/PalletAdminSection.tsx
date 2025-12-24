@@ -1,5 +1,9 @@
 // src/features/admin/components/PalletAdminSection.tsx
 import React, { useEffect, useState } from "react";
+
+//import api 
+import { API_BASE } from "../../../config/api";
+
 import type { PalletType } from "../../../types/domain";
 
 const emptyPalletForm = {
@@ -41,7 +45,7 @@ const PalletAdminSection: React.FC = () => {
       if (searchValue.trim()) params.set("search", searchValue.trim());
       if (includeInactive) params.set("includeInactive", "true");
 
-      const res = await fetch(`/api/pallet-types?${params.toString()}`, { signal });
+      const res = await fetch(`${API_BASE}/pallet-types?${params.toString()}`, { signal });
       const data: PalletType[] = await res.json();
       setPallets(data);
     } catch (err) {
@@ -97,7 +101,7 @@ const PalletAdminSection: React.FC = () => {
         return;
       }
 
-      const res = await fetch("/api/pallet-types", {
+      const res = await fetch(`${API_BASE}/pallet-types`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: name.trim() }),
@@ -161,7 +165,7 @@ const PalletAdminSection: React.FC = () => {
         return;
       }
 
-      const res = await fetch(`/api/pallet-types/${selectedPalletId}`, {
+      const res = await fetch(`${API_BASE}/pallet-types/${selectedPalletId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: name.trim() }),
@@ -187,7 +191,7 @@ const PalletAdminSection: React.FC = () => {
   const togglePalletActive = async (palletId: number, makeActive: boolean) => {
     try {
       const res = await fetch(
-        `/api/pallet-types/${palletId}/${makeActive ? "enable" : "disable"}`,
+        `${API_BASE}/pallet-types/${palletId}/${makeActive ? "enable" : "disable"}`,
         { method: "PATCH" }
       );
 

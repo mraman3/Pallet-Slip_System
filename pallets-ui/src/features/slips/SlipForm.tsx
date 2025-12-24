@@ -1,5 +1,9 @@
 // src/features/slips/SlipForm.tsx
 import React, { useEffect, useState } from "react";
+
+//import api 
+import { API_BASE } from "../../config/api";
+
 import type {
   Client,
   ClientAddress,
@@ -102,7 +106,7 @@ const SlipForm: React.FC<SlipFormProps> = ({
         const params = new URLSearchParams();
         if (includeInactive) params.set("includeInactive", "true");
 
-        const res = await fetch(`/api/clerks?${params.toString()}`, {
+        const res = await fetch(`${API_BASE}/clerks?${params.toString()}`, {
           signal: controller.signal,
         });
         const data = await res.json();
@@ -118,7 +122,7 @@ const SlipForm: React.FC<SlipFormProps> = ({
         const params = new URLSearchParams();
         if (includeInactive) params.set("includeInactive", "true");
 
-        const res = await fetch(`/api/pallet-types?${params.toString()}`, {
+        const res = await fetch(`${API_BASE}/pallet-types?${params.toString()}`, {
           signal: controller.signal,
         });
         const data = await res.json();
@@ -145,7 +149,7 @@ const SlipForm: React.FC<SlipFormProps> = ({
         if (clientSearch.trim()) params.set("search", clientSearch.trim());
         if (includeInactive) params.set("includeInactive", "true");
 
-        const res = await fetch(`/api/clients?${params.toString()}`, {
+        const res = await fetch(`${API_BASE}/clients?${params.toString()}`, {
           signal: controller.signal,
         });
         const data = await res.json();
@@ -178,8 +182,7 @@ const SlipForm: React.FC<SlipFormProps> = ({
         const params = new URLSearchParams();
         if (includeInactive) params.set("includeInactive", "true");
 
-        const res = await fetch(
-          `/api/clients/${selectedClientId}/addresses?${params.toString()}`,
+        const res = await fetch(`${API_BASE}/clients/${selectedClientId}/addresses?${params.toString()}`,
           { signal: controller.signal }
         );
 
@@ -297,8 +300,8 @@ const SlipForm: React.FC<SlipFormProps> = ({
 
       const url =
         mode === "edit" && initialSlip?.id
-          ? `/api/slips/${initialSlip.id}`
-          : "/api/slips";
+          ? `${API_BASE}/slips/${initialSlip.id}`
+          : `${API_BASE}/slips`;
 
       const method = mode === "edit" ? "PUT" : "POST";
 
@@ -326,7 +329,7 @@ const SlipForm: React.FC<SlipFormProps> = ({
         // ✅ OPEN PDF ONLY ON CREATE
         if (mode === "create" && data.id) {
           window.open(
-            `/api/slips/${data.id}/pdf`,
+            `${API_BASE}/slips/${data.id}/pdf`,
             "_blank",
             "noopener,noreferrer"
           );

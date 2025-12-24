@@ -1,6 +1,9 @@
 import React from "react";
 import type { SlipWithRelations } from "../../../types/slipApi";
 
+//import api
+import { API_BASE } from "../../../config/api";
+
 /**
  * SortKey
  *
@@ -110,7 +113,7 @@ const SlipResultsTable: React.FC<Props> = ({
               <button
                 type="button"
                 onClick={() =>
-                  window.open(`/api/slips/${s.id}/pdf`, "_blank", "noopener,noreferrer")
+                  window.open(`${API_BASE}/slips/${s.id}/pdf`, "_blank", "noopener,noreferrer")
                 }
               >
                 Print

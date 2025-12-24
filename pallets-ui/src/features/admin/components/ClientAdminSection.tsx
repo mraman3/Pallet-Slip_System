@@ -1,5 +1,9 @@
 // src/features/admin/components/ClientAdminSection.tsx
 import React, { useEffect, useState } from "react";
+
+//import api 
+import { API_BASE } from "../../../config/api";
+
 import type { Client } from "../../../types/domain";
 
 const emptyForm = {
@@ -52,7 +56,7 @@ const ClientAdminSection: React.FC<Props> = ({ onClientChanged }) => {
       if (searchValue.trim()) params.set("search", searchValue.trim());
       if (includeInactive) params.set("includeInactive", "true");
 
-      const res = await fetch(`/api/clients?${params.toString()}`, { signal });
+      const res = await fetch(`${API_BASE}/clients?${params.toString()}`, { signal });
       const data: Client[] = await res.json();
       setClients(data);
     } catch (err) {
@@ -108,7 +112,7 @@ const ClientAdminSection: React.FC<Props> = ({ onClientChanged }) => {
         return;
       }
 
-      const res = await fetch("/api/clients", {
+      const res = await fetch(`${API_BASE}/clients`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -188,7 +192,7 @@ const ClientAdminSection: React.FC<Props> = ({ onClientChanged }) => {
         return;
       }
 
-      const res = await fetch(`/api/clients/${selectedEditClientId}`, {
+      const res = await fetch(`${API_BASE}/clients/${selectedEditClientId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -222,7 +226,7 @@ const ClientAdminSection: React.FC<Props> = ({ onClientChanged }) => {
   const toggleClientActive = async (clientId: number, makeActive: boolean) => {
     try {
       const res = await fetch(
-        `/api/clients/${clientId}/${makeActive ? "enable" : "disable"}`,
+        `${API_BASE}/clients/${clientId}/${makeActive ? "enable" : "disable"}`,
         { method: "PATCH" }
       );
 

@@ -1,6 +1,9 @@
 // src/features/createdSlips/SlipSearchPage.tsx
 import React, { useEffect, useState } from "react";
 
+// import api base
+import { API_BASE } from "../../config/api";
+
 // UI components
 import SlipFilters from "./components/SlipFilters";
 import SlipResultsTable from "./components/SlipResultsTable";
@@ -94,10 +97,6 @@ const SlipSearchPage: React.FC = () => {
   // Sorted view of search results (table headers control sort)
   const { sortedResults, handleSort, sortIcon } = useSlipSorting(results);
 
-  // -------------------------
-  // SIDE EFFECTS
-  // -------------------------
-
   // Initial page load → fetch recent slips
   useEffect(() => {
     fetchSlips();
@@ -151,7 +150,7 @@ const SlipSearchPage: React.FC = () => {
       params.set("limit", String(PAGE_SIZE));
       params.set("offset", String(offset));
 
-      const res = await fetch(`/api/slips?${params.toString()}`);
+      const res = await fetch(`${API_BASE}/slips?${params.toString()}`);
       const data = await res.json();
 
       if (!res.ok) {
@@ -176,7 +175,7 @@ const SlipSearchPage: React.FC = () => {
     try {
       setError(null);
 
-      const res = await fetch(`/api/slips/${id}`);
+      const res = await fetch(`${API_BASE}/slips/${id}`);
       const data = await res.json();
 
       if (!res.ok) {

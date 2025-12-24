@@ -1,4 +1,8 @@
 import React, { useEffect, useState } from "react";
+
+//import api
+import { API_BASE } from "../../../config/api";
+
 import type { Client, ClientAddress } from "../../../types/domain";
 
 const emptyAddressForm = {
@@ -50,7 +54,7 @@ const AddressAdminSection: React.FC<Props> = ({ clientVersion }) => {
       if (searchValue.trim()) params.set("search", searchValue.trim());
       if (includeInactive) params.set("includeInactive", "true");
 
-      const res = await fetch(`/api/clients?${params.toString()}`, { signal });
+      const res = await fetch(`${API_BASE}/clients?${params.toString()}`, { signal });
       const data: Client[] = await res.json();
       setClients(data);
     } catch (e) {
@@ -95,7 +99,7 @@ const AddressAdminSection: React.FC<Props> = ({ clientVersion }) => {
       if (includeInactive) params.set("includeInactive", "true");
 
       const res = await fetch(
-        `/api/clients/${clientId}/addresses?${params.toString()}`,
+        `${API_BASE}/clients/${clientId}/addresses?${params.toString()}`,
         { signal }
       );
 
@@ -172,7 +176,7 @@ const AddressAdminSection: React.FC<Props> = ({ clientVersion }) => {
         return;
       }
 
-      const res = await fetch(`/api/clients/${selectedClientId}/addresses`, {
+      const res = await fetch(`${API_BASE}/clients/${selectedClientId}/addresses`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -255,7 +259,7 @@ const AddressAdminSection: React.FC<Props> = ({ clientVersion }) => {
       }
 
       const res = await fetch(
-        `/api/clients/${selectedClientId}/addresses/${selectedAddressId}`,
+        `${API_BASE}/clients/${selectedClientId}/addresses/${selectedAddressId}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -293,7 +297,7 @@ const AddressAdminSection: React.FC<Props> = ({ clientVersion }) => {
       if (!selectedClientId) return;
 
       const res = await fetch(
-        `/api/clients/${selectedClientId}/addresses/${addressId}/${makeActive ? "enable" : "disable"
+        `${API_BASE}/clients/${selectedClientId}/addresses/${addressId}/${makeActive ? "enable" : "disable"
         }`,
         { method: "PATCH" }
       );
