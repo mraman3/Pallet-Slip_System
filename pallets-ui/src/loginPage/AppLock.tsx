@@ -1,22 +1,36 @@
 import { useState } from "react";
 
-export function AppLock() {
+export function AppLock({ onUnlocked }: { onUnlocked: () => void }) {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
 
-  function submit(e: React.FormEvent) {
+  async function submit(e: React.FormEvent) {
     e.preventDefault();
+    setError(null);
 
     if (!password.trim()) {
       setError("Password required");
       return;
     }
 
-    // store password locally
-    localStorage.setItem("app_token", password.trim());
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE}/unlock`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password: password.trim() }),
+      });
 
-    // reload app so it re-checks access
-    window.location.reload();
+      if (!res.ok) {
+        throw new Error("Wrong password");
+      }
+
+      // ✅ Only store token AFTER validation
+      localStorage.setItem("app_token", password.trim());
+      onUnlocked(); // ← important: no reload
+
+    } catch {
+      setError("Wrong password");
+    }
   }
 
   return (

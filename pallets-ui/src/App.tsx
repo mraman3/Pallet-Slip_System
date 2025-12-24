@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 // Login page
 import { AppLock } from "./loginPage/AppLock";
 
@@ -10,10 +10,18 @@ import SlipSearchPage from "./features/createdSlips/SlipSearchPage";
 type Tab = "slip" | "admin" | "search";
 
 function App() {
-  const token = localStorage.getItem("app_token");
+  const [token, setToken] = useState(
+    () => localStorage.getItem("app_token")
+  );
+
+  useEffect(() => {
+    const handleLock = () => setToken(null);
+    window.addEventListener("app:locked", handleLock);
+    return () => window.removeEventListener("app:locked", handleLock);
+  }, []);
 
   if (!token) {
-    return <AppLock />;
+    return <AppLock onUnlocked={() => setToken(localStorage.getItem("app_token"))} />;
   }
 
   const [activeTab, setActiveTab] = useState<Tab>("slip");

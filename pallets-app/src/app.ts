@@ -33,7 +33,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
     if (process.env.NODE_ENV !== "test") {
       console.log(
         `[${new Date().toISOString()}] ${req.method} ${req.originalUrl} ` +
-          `${res.statusCode} ${ms.toFixed(1)}ms`
+        `${res.statusCode} ${ms.toFixed(1)}ms`
       );
     }
   });
@@ -47,6 +47,16 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 app.use(healthRoutes); // exposes GET /healthz
 
 // App Login Access Middleware
+app.post("/api/unlock", (req, res) => {
+  const { password } = req.body;
+
+  if (!password || password !== process.env.APP_ACCESS_PASSWORD) {
+    return res.status(401).json({ error: "Invalid password" });
+  }
+
+  res.json({ ok: true });
+});
+
 app.use("/api", requireAppAccess);
 
 // -----------------------------

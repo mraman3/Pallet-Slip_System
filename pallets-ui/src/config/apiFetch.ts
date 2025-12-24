@@ -14,7 +14,10 @@ export async function apiFetch(
   // If backend says locked → relock app
   if (res.status === 401 || res.status === 403) {
     localStorage.removeItem("app_token");
-    window.location.reload();
+    
+    // notify app instead of reloading
+    window.dispatchEvent(new Event("app:locked"));
+    
     throw new Error("App locked");
   }
 
