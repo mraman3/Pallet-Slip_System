@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 
 //import api 
 import { API_BASE } from "../../../config/api";
+import { apiFetch } from "../../../config/apiFetch";
 
 import type { Client } from "../../../types/domain";
 
@@ -56,7 +57,7 @@ const ClientAdminSection: React.FC<Props> = ({ onClientChanged }) => {
       if (searchValue.trim()) params.set("search", searchValue.trim());
       if (includeInactive) params.set("includeInactive", "true");
 
-      const res = await fetch(`${API_BASE}/clients?${params.toString()}`, { signal });
+      const res = await apiFetch(`${API_BASE}/clients?${params.toString()}`, { signal });
       const data: Client[] = await res.json();
       setClients(data);
     } catch (err) {
@@ -112,9 +113,8 @@ const ClientAdminSection: React.FC<Props> = ({ onClientChanged }) => {
         return;
       }
 
-      const res = await fetch(`${API_BASE}/clients`, {
+      const res = await apiFetch(`${API_BASE}/clients`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name,
           address,
@@ -192,9 +192,8 @@ const ClientAdminSection: React.FC<Props> = ({ onClientChanged }) => {
         return;
       }
 
-      const res = await fetch(`${API_BASE}/clients/${selectedEditClientId}`, {
+      const res = await apiFetch(`${API_BASE}/clients/${selectedEditClientId}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name,
           address,
@@ -225,7 +224,7 @@ const ClientAdminSection: React.FC<Props> = ({ onClientChanged }) => {
   // ---- Enable and Disable Client ----
   const toggleClientActive = async (clientId: number, makeActive: boolean) => {
     try {
-      const res = await fetch(
+      const res = await apiFetch(
         `${API_BASE}/clients/${clientId}/${makeActive ? "enable" : "disable"}`,
         { method: "PATCH" }
       );

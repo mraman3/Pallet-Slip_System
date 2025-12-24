@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 
 //import api
 import { API_BASE } from "../../../config/api";
+import { apiFetch } from "../../../config/apiFetch";
 
 import type { Client, ClientAddress } from "../../../types/domain";
 
@@ -54,7 +55,7 @@ const AddressAdminSection: React.FC<Props> = ({ clientVersion }) => {
       if (searchValue.trim()) params.set("search", searchValue.trim());
       if (includeInactive) params.set("includeInactive", "true");
 
-      const res = await fetch(`${API_BASE}/clients?${params.toString()}`, { signal });
+      const res = await apiFetch(`${API_BASE}/clients?${params.toString()}`, { signal });
       const data: Client[] = await res.json();
       setClients(data);
     } catch (e) {
@@ -98,7 +99,7 @@ const AddressAdminSection: React.FC<Props> = ({ clientVersion }) => {
       if (searchValue.trim()) params.set("search", searchValue.trim());
       if (includeInactive) params.set("includeInactive", "true");
 
-      const res = await fetch(
+      const res = await apiFetch(
         `${API_BASE}/clients/${clientId}/addresses?${params.toString()}`,
         { signal }
       );
@@ -176,9 +177,8 @@ const AddressAdminSection: React.FC<Props> = ({ clientVersion }) => {
         return;
       }
 
-      const res = await fetch(`${API_BASE}/clients/${selectedClientId}/addresses`, {
+      const res = await apiFetch(`${API_BASE}/clients/${selectedClientId}/addresses`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           location_name,
           address,
@@ -258,11 +258,10 @@ const AddressAdminSection: React.FC<Props> = ({ clientVersion }) => {
         return;
       }
 
-      const res = await fetch(
+      const res = await apiFetch(
         `${API_BASE}/clients/${selectedClientId}/addresses/${selectedAddressId}`,
         {
           method: "PUT",
-          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             location_name,
             address,
@@ -296,7 +295,7 @@ const AddressAdminSection: React.FC<Props> = ({ clientVersion }) => {
     try {
       if (!selectedClientId) return;
 
-      const res = await fetch(
+      const res = await apiFetch(
         `${API_BASE}/clients/${selectedClientId}/addresses/${addressId}/${makeActive ? "enable" : "disable"
         }`,
         { method: "PATCH" }

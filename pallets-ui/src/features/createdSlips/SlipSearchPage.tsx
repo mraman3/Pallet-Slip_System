@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 
 // import api base
 import { API_BASE } from "../../config/api";
+import { apiFetch } from "../../config/apiFetch";
 
 // UI components
 import SlipFilters from "./components/SlipFilters";
@@ -150,7 +151,7 @@ const SlipSearchPage: React.FC = () => {
       params.set("limit", String(PAGE_SIZE));
       params.set("offset", String(offset));
 
-      const res = await fetch(`${API_BASE}/slips?${params.toString()}`);
+      const res = await apiFetch(`${API_BASE}/slips?${params.toString()}`);
       const data = await res.json();
 
       if (!res.ok) {
@@ -175,7 +176,7 @@ const SlipSearchPage: React.FC = () => {
     try {
       setError(null);
 
-      const res = await fetch(`${API_BASE}/slips/${id}`);
+      const res = await apiFetch(`${API_BASE}/slips/${id}`);
       const data = await res.json();
 
       if (!res.ok) {

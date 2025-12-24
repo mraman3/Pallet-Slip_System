@@ -1,4 +1,7 @@
 import { useState } from "react";
+// Login page
+import { AppLock } from "./loginPage/AppLock";
+
 import SlipForm from "./features/slips/SlipForm";
 import AdminPage from "./features/admin/AdminPage";
 import SlipSearchPage from "./features/createdSlips/SlipSearchPage";
@@ -7,6 +10,12 @@ import SlipSearchPage from "./features/createdSlips/SlipSearchPage";
 type Tab = "slip" | "admin" | "search";
 
 function App() {
+  const token = localStorage.getItem("app_token");
+
+  if (!token) {
+    return <AppLock />;
+  }
+
   const [activeTab, setActiveTab] = useState<Tab>("slip");
 
   return (

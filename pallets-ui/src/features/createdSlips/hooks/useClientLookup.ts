@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 
 //import api
 import { API_BASE } from "../../../config/api";
+import { apiFetch } from "../../../config/apiFetch";
 
 import type { Client, ClientAddress } from "../../../types/domain";
 
@@ -63,7 +64,7 @@ export const useClientLookup = ({
         // Include inactive clients for historical slips
         params.set("includeInactive", "true");
 
-        const res = await fetch(`${API_BASE}/clients?${params.toString()}`, {
+        const res = await apiFetch(`${API_BASE}/clients?${params.toString()}`, {
           signal: controller.signal,
         });
 
@@ -111,7 +112,7 @@ export const useClientLookup = ({
         // Include inactive addresses for historical slips
         params.set("includeInactive", "true");
 
-        const res = await fetch(
+        const res = await apiFetch(
           `${API_BASE}/clients/${selectedClientId}/addresses?${params.toString()}`,
           { signal: controller.signal }
         );

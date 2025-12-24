@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 
 //import api
 import { API_BASE } from "../../../config/api";
+import { apiFetch } from "../../../config/apiFetch";
 
 import type { Clerk } from "../../../types/domain";
 
@@ -43,7 +44,7 @@ export const useClerks = () => {
         const params = new URLSearchParams();
         params.set("includeInactive", "true");
 
-        const res = await fetch(`${API_BASE}/clerks?${params.toString()}`);
+        const res = await apiFetch(`${API_BASE}/clerks?${params.toString()}`);
         const data = await res.json();
 
         if (!res.ok) {

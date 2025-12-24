@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 
 //import api 
 import { API_BASE } from "../../config/api";
+import { apiFetch } from "../../config/apiFetch";
 
 import type {
   Client,
@@ -106,7 +107,7 @@ const SlipForm: React.FC<SlipFormProps> = ({
         const params = new URLSearchParams();
         if (includeInactive) params.set("includeInactive", "true");
 
-        const res = await fetch(`${API_BASE}/clerks?${params.toString()}`, {
+        const res = await apiFetch(`${API_BASE}/clerks?${params.toString()}`, {
           signal: controller.signal,
         });
         const data = await res.json();
@@ -122,7 +123,7 @@ const SlipForm: React.FC<SlipFormProps> = ({
         const params = new URLSearchParams();
         if (includeInactive) params.set("includeInactive", "true");
 
-        const res = await fetch(`${API_BASE}/pallet-types?${params.toString()}`, {
+        const res = await apiFetch(`${API_BASE}/pallet-types?${params.toString()}`, {
           signal: controller.signal,
         });
         const data = await res.json();
@@ -149,7 +150,7 @@ const SlipForm: React.FC<SlipFormProps> = ({
         if (clientSearch.trim()) params.set("search", clientSearch.trim());
         if (includeInactive) params.set("includeInactive", "true");
 
-        const res = await fetch(`${API_BASE}/clients?${params.toString()}`, {
+        const res = await apiFetch(`${API_BASE}/clients?${params.toString()}`, {
           signal: controller.signal,
         });
         const data = await res.json();
@@ -182,7 +183,7 @@ const SlipForm: React.FC<SlipFormProps> = ({
         const params = new URLSearchParams();
         if (includeInactive) params.set("includeInactive", "true");
 
-        const res = await fetch(`${API_BASE}/clients/${selectedClientId}/addresses?${params.toString()}`,
+        const res = await apiFetch(`${API_BASE}/clients/${selectedClientId}/addresses?${params.toString()}`,
           { signal: controller.signal }
         );
 
@@ -305,9 +306,8 @@ const SlipForm: React.FC<SlipFormProps> = ({
 
       const method = mode === "edit" ? "PUT" : "POST";
 
-      const res = await fetch(url, {
+      const res = await apiFetch(url, {
         method,
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
       });
 
@@ -328,11 +328,14 @@ const SlipForm: React.FC<SlipFormProps> = ({
 
         // ✅ OPEN PDF ONLY ON CREATE
         if (mode === "create" && data.id) {
-          window.open(
-            `${API_BASE}/slips/${data.id}/pdf`,
-            "_blank",
-            "noopener,noreferrer"
+          const pdfRes = await apiFetch(
+            `${API_BASE}/slips/${data.id}/pdf`
           );
+
+          const blob = await pdfRes.blob();
+          const url = URL.createObjectURL(blob);
+
+          window.open(url, "_blank", "noopener,noreferrer");
         }
 
         // optional: reset form after create
