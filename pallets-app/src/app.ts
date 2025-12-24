@@ -2,6 +2,8 @@
 import express, { type Request, type Response, type NextFunction } from "express";
 import cors from "cors";
 
+import { requireAppAccess } from "./middleware/appAccess";
+
 import healthRoutes from "./routes/health";
 import slipsRoutes from "./routes/slips";
 import slipsPdfRoutes from "./routes/slipsPdf";
@@ -43,6 +45,9 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 // Health route (root-level)
 // -----------------------------
 app.use(healthRoutes); // exposes GET /healthz
+
+// App Login Access Middleware
+app.use("/api", requireAppAccess);
 
 // -----------------------------
 // API routes
