@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import SlipForm from "./features/slips/SlipForm";
 import AdminPage from "./features/admin/AdminPage";
 import SlipSearchPage from "./features/createdSlips/SlipSearchPage";
