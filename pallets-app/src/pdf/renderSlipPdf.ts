@@ -1,5 +1,7 @@
 // src/pdf/renderSlipPdf.ts
 import { getBrowser } from "./getBrowser";
+import { acquirePage, releasePage } from "./pagePool";
+
 
 // High-resolution timing helper (ms)
 const now = () => Number(process.hrtime.bigint() / 1_000_000n);
@@ -24,15 +26,15 @@ export const renderSlipPdf = async (html: string): Promise<Buffer> => {
   // Browser acquisition (cold start vs warm reuse)
   // --------------------------------------------------
   const t0 = now();
-  const browser = await getBrowser();
+  await getBrowser();
   console.log(`🧠 Browser ready in ${now() - t0}ms`);
 
   // --------------------------------------------------
   // Page lifecycle
   // --------------------------------------------------
   const t1 = now();
-  const page = await browser.newPage();
-  console.log(`📄 Page created in ${now() - t1}ms`);
+  const page = await acquirePage();
+  console.log(`📄 Page acquired in ${now() - t1}ms`);
 
   try {
     // ----------------------------------------------
@@ -60,6 +62,6 @@ export const renderSlipPdf = async (html: string): Promise<Buffer> => {
     return Buffer.from(pdfUint8);
   } finally {
     // Always close the page — browser stays alive
-    await page.close();
+    await releasePage(page);
   }
 };
