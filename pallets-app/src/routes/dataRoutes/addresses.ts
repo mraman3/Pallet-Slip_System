@@ -1,6 +1,6 @@
 // src/routes/addresses.ts
 import { Router, Request, Response } from "express";
-import { prisma } from "../prisma";
+import { prisma } from "../../prisma";
 import { Prisma } from "@prisma/client";
 
 // mergeParams: true lets us read :clientId from the parent route

@@ -1,10 +1,10 @@
 import { Router } from "express";
-import { prisma } from "../prisma";
+import { prisma } from "../../prisma";
 
 // PDF pipeline helpers
-import { serializeSlip } from "../pdf/serializeSlip";
-import { buildSlipHtml } from "../pdf/buildSlipHtml";
-import { renderSlipPdf } from "../pdf/renderSlipPdf";
+import { serializeSlip } from "../../pdf/serializeSlip";
+import { buildSlipHtml } from "../../pdf/buildSlipHtml";
+import { renderSlipPdf } from "../../pdf/renderSlipPdf";
 
 const router = Router();
 

@@ -1,6 +1,6 @@
 // Client Apis
 import { Router } from "express";
-import { prisma } from "../prisma";
+import { prisma } from "../../prisma";
 import { Prisma } from "@prisma/client";
 
 const router = Router();
