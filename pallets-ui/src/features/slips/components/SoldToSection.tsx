@@ -1,5 +1,6 @@
 import React from "react";
 import type { Client } from "../../../types/domain";
+import "./css/SoldToSection.css"
 
 type Props = {
   clientSearch: string;
@@ -17,12 +18,13 @@ const SoldToSection: React.FC<Props> = ({
   setSelectedClientId,
 }) => {
   return (
-    <fieldset style={{ marginBottom: 16 }}>
+    <fieldset className="sold-to-section">
       <legend>Sold To (Client)</legend>
 
-      <div style={{ marginBottom: 8 }}>
+      {/* Client search */}
+      <div className="field">
         <label>
-          Client search:&nbsp;
+          Client search:
           <input
             value={clientSearch}
             onChange={(e) => setClientSearch(e.target.value)}
@@ -31,9 +33,10 @@ const SoldToSection: React.FC<Props> = ({
         </label>
       </div>
 
-      <div style={{ marginBottom: 8 }}>
+      {/* Client select */}
+      <div className="field">
         <label>
-          Select client:&nbsp;
+          Select client:
           <select
             value={selectedClientId}
             onChange={(e) =>

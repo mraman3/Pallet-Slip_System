@@ -1,5 +1,6 @@
 // src/features/slips/SlipForm.tsx
 import React, { useEffect, useState } from "react";
+import "./SlipForm.css"
 
 //import api 
 import { API_BASE } from "../../config/api";
@@ -363,12 +364,12 @@ const SlipForm: React.FC<SlipFormProps> = ({
   };
 
   return (
-    <form onSubmit={handleSubmit} style={{ maxWidth: 900 }}>
+    <form onSubmit={handleSubmit} className="slip-form">
       <p>
         Fill in the fields below to create a new slip.
       </p>
-      {message && <div style={{ marginBottom: 8, color: "green" }}>{message}</div>}
-      {error && <div style={{ marginBottom: 8, color: "red" }}>{error}</div>}
+      {message && <div className="slip-message success">{message}</div>}
+      {error && <div className="slip-message error">{error}</div>}
 
       <SoldToSection
         clientSearch={clientSearch}

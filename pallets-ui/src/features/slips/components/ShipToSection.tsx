@@ -1,6 +1,18 @@
 import React from "react";
 import type { ClientAddress } from "../../../types/domain";
+import "./css/ShipToSection.css"
 
+/**
+ * Props for ShipToSection
+ *
+ * Responsibilities:
+ * - Display ship-to address selector
+ * - Disable selection until a client is chosen
+ *
+ * Non-responsibilities:
+ * - Fetching addresses
+ * - Validation logic
+ */
 type Props = {
   addresses: ClientAddress[];
   selectedAddressId: number | "";
@@ -15,12 +27,12 @@ const ShipToSection: React.FC<Props> = ({
   clientSelected,
 }) => {
   return (
-    <fieldset style={{ marginBottom: 16 }}>
+    <fieldset className="ship-to-section">
       <legend>Ship To</legend>
 
-      <div style={{ marginBottom: 8 }}>
+      <div className="field">
         <label>
-          Address:&nbsp;
+          Address:
           <select
             value={selectedAddressId}
             onChange={(e) =>
@@ -44,6 +56,12 @@ const ShipToSection: React.FC<Props> = ({
               ))}
           </select>
         </label>
+
+        {!clientSelected && (
+          <div className="hint">
+            Select a client to choose a ship-to address.
+          </div>
+        )}
       </div>
     </fieldset>
   );

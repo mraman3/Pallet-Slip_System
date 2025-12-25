@@ -1,0 +1,127 @@
+/* =========================
+   Slip form wrapper
+   ========================= */
+.slip-form {
+  max-width: 900px;
+  margin: 0 auto;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 24px;
+}
+
+/* Intro text */
+.slip-form p {
+  margin-top: 0;
+  margin-bottom: 16px;
+  font-size: 14px;
+  color: #475569;
+}
+
+/* =========================
+   Status messages
+   ========================= */
+.slip-message {
+  margin-bottom: 10px;
+  padding: 8px 10px;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.slip-message.success {
+  background: #ecfdf5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+}
+
+.slip-message.error {
+  background: #fef2f2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+
+/* =========================
+   Section spacing
+   ========================= */
+.slip-form > * + * {
+  margin-top: 20px;
+}
+
+/* =========================
+   Inputs (baseline only)
+   ========================= */
+.slip-form input,
+.slip-form select,
+.slip-form textarea {
+  width: 100%;
+  padding: 8px 10px;
+  font-size: 14px;
+  border-radius: 4px;
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  color: #1f2933;
+}
+
+.slip-form textarea {
+  resize: vertical;
+  min-height: 60px;
+}
+
+.slip-form input:focus,
+.slip-form select:focus,
+.slip-form textarea:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.4);
+}
+
+/* Disabled */
+.slip-form input:disabled,
+.slip-form select:disabled,
+.slip-form textarea:disabled {
+  background: #f1f5f9;
+  cursor: not-allowed;
+}
+
+/* =========================
+   Buttons
+   ========================= */
+.slip-form button[type="submit"] {
+  margin-top: 24px;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  background: #2563eb;
+  color: #ffffff;
+  transition: background 0.15s ease, opacity 0.15s ease;
+}
+
+.slip-form button[type="submit"]:hover {
+  background: #1d4ed8;
+}
+
+.slip-form button[type="submit"]:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* =========================
+   Inline helper text
+   ========================= */
+.slip-form .hint {
+  font-size: 12px;
+  color: #64748b;
+  margin-top: 4px;
+}
+
+/* =========================
+   Responsive
+   ========================= */
+@media (max-width: 700px) {
+  .slip-form {
+    padding: 16px;
+  }
+}

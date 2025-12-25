@@ -1,16 +1,31 @@
 import React from "react";
 import type { Clerk } from "../../../types/domain";
+import "./css/SlipDetailsSection.css"
 
+/**
+ * Props for SlipDetailsSection
+ *
+ * Responsibilities:
+ * - Core slip metadata (dates, order #, clerk, shipped via)
+ *
+ * Non-responsibilities:
+ * - Validation
+ * - Saving logic
+ */
 type Props = {
   date: string;
   setDate: (value: string) => void;
+
   customerOrder: string;
   setCustomerOrder: (value: string) => void;
+
   dateShipped: string;
   setDateShipped: (value: string) => void;
+
   clerks: Clerk[];
   selectedClerkId: number | "";
   setSelectedClerkId: (value: number | "") => void;
+
   shippedVia: "BPI" | "P/U";
   setShippedVia: (v: "BPI" | "P/U") => void;
 };
@@ -29,12 +44,13 @@ const SlipDetailsSection: React.FC<Props> = ({
   setShippedVia,
 }) => {
   return (
-    <fieldset style={{ marginBottom: 16 }}>
+    <fieldset className="slip-details-section">
       <legend>Slip Details</legend>
 
-      <div style={{ display: "flex", gap: 16, marginBottom: 8 }}>
+      {/* Date + Customer Order */}
+      <div className="slip-details-grid">
         <label>
-          Date:&nbsp;
+          Date:
           <input
             type="date"
             value={date}
@@ -43,7 +59,7 @@ const SlipDetailsSection: React.FC<Props> = ({
         </label>
 
         <label>
-          Customer Order:&nbsp;
+          Customer Order:
           <input
             type="text"
             value={customerOrder}
@@ -52,9 +68,10 @@ const SlipDetailsSection: React.FC<Props> = ({
         </label>
       </div>
 
-      <div style={{ display: "flex", gap: 16, marginBottom: 8 }}>
+      {/* Date Shipped + Clerk */}
+      <div className="slip-details-grid">
         <label>
-          Date Shipped:&nbsp;
+          Date Shipped:
           <input
             type="date"
             value={dateShipped}
@@ -63,7 +80,7 @@ const SlipDetailsSection: React.FC<Props> = ({
         </label>
 
         <label>
-          Clerk:&nbsp;
+          Clerk:
           <select
             value={selectedClerkId}
             onChange={(e) =>
@@ -88,26 +105,27 @@ const SlipDetailsSection: React.FC<Props> = ({
         </label>
       </div>
 
-      <div style={{ marginBottom: 8 }}>
-        Shipped via:&nbsp;
+      {/* Shipped via */}
+      <div className="shipped-via">
+        <span className="label">Shipped via</span>
         <label>
+          BPI
           <input
             type="radio"
             value="BPI"
             checked={shippedVia === "BPI"}
             onChange={() => setShippedVia("BPI")}
           />
-          BPI
         </label>
-        &nbsp;&nbsp;
+
         <label>
+          P/U
           <input
             type="radio"
             value="P/U"
             checked={shippedVia === "P/U"}
             onChange={() => setShippedVia("P/U")}
           />
-          P/U
         </label>
       </div>
     </fieldset>

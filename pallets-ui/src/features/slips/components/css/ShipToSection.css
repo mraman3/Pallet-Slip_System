@@ -1,0 +1,40 @@
+/* =========================
+   Ship To section
+   ========================= */
+.ship-to-section {
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 12px 16px;
+}
+
+/* Legend */
+.ship-to-section legend {
+  padding: 0 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+}
+
+/* Field wrapper */
+.ship-to-section .field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* Label */
+.ship-to-section label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #374151;
+}
+
+/* Disabled hint */
+.ship-to-section .hint {
+  font-size: 12px;
+  color: #64748b;
+  margin-top: 2px;
+}

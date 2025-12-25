@@ -1,6 +1,10 @@
 import React from "react";
 import type { PalletType } from "../../../types/domain";
+import "./css/LineItemSection.css"
 
+/**
+ * UI-only line item representation
+ */
 type UiSlipItem = {
   pallet_type_id: number | "";
   qty_ordered: string;
@@ -19,6 +23,17 @@ type Props = {
   onRemove: (index: number) => void;
 };
 
+/**
+ * LineItemSection
+ *
+ * Responsibilities:
+ * - Render pallet line items
+ * - Allow add / remove
+ *
+ * Non-responsibilities:
+ * - Validation
+ * - Totals
+ */
 const LineItemSection: React.FC<Props> = ({
   items,
   palletTypes,
@@ -27,16 +42,15 @@ const LineItemSection: React.FC<Props> = ({
   onRemove,
 }) => {
   return (
-    <fieldset style={{ marginBottom: 16 }}>
+    <fieldset className="line-item-section">
       <legend>Line Items</legend>
 
       {items.map((item, index) => (
-        <div
-          key={index}
-          style={{ display: "flex", gap: 16, marginBottom: 8 }}
-        >
+        <div key={index} className="line-item-row">
+
+          {/* Pallet type */}
           <label>
-            Pallet Type:&nbsp;
+            Pallet Type:
             <select
               value={item.pallet_type_id}
               onChange={(e) =>
@@ -64,8 +78,9 @@ const LineItemSection: React.FC<Props> = ({
             </select>
           </label>
 
+          {/* Qty ordered */}
           <label>
-            Qty Ordered:&nbsp;
+            Qty Ordered:
             <input
               type="text"
               value={item.qty_ordered}
@@ -75,8 +90,9 @@ const LineItemSection: React.FC<Props> = ({
             />
           </label>
 
+          {/* Qty shipped */}
           <label>
-            Qty Shipped:&nbsp;
+            Qty Shipped:
             <input
               type="text"
               value={item.qty_shipped}
@@ -86,17 +102,14 @@ const LineItemSection: React.FC<Props> = ({
             />
           </label>
 
-          <button
-            type="button"
-            onClick={() => onRemove(index)}
-            style={{ alignSelf: "flex-end" }}
-          >
+          {/* Remove button */}
+          <button type="button" onClick={() => onRemove(index)} className="remove-line-item">
             ✕
           </button>
         </div>
       ))}
 
-      <button type="button" onClick={onAdd}>
+      <button type="button" onClick={onAdd} className="add-line-item">
         + Add Pallet Type
       </button>
     </fieldset>
