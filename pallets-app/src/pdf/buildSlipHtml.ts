@@ -75,7 +75,16 @@ export const buildSlipHtml = (slip: any): string => {
       .fill(emptyRow)
       .join("");
 
-  // 6. Replace placeholders
+  //6. Change ship to address to "P/U" if the shipped via is "Pickup"
+  const isPickup = slip.shipped_via === "P/U";
+
+const shipName = isPickup ? "" : slip.ship_to_address?.location_name ?? "";
+const shipAddress = isPickup ? "" : slip.ship_to_address?.address ?? "";
+const shipCity = isPickup
+  ? ""
+  : `${slip.ship_to_address?.city ?? ""}, ${slip.ship_to_address?.province ?? ""} ${slip.ship_to_address?.postal ?? ""}`;
+
+  // 7. Replace placeholders
   html = html
     .replace("__LOGO_BASE64__", `data:image/webp;base64,${logoBase64}`)
     .replace("__SLIP_NUMBER__", slip.slip_number)
@@ -90,12 +99,9 @@ export const buildSlipHtml = (slip: any): string => {
       "__CLIENT_CITY__",
       `${slip.client?.city ?? ""}, ${slip.client?.province ?? ""} ${slip.client?.postal ?? ""}`
     )
-    .replace("__SHIP_NAME__", slip.ship_to_address?.location_name ?? "")
-    .replace("__SHIP_ADDRESS__", slip.ship_to_address?.address ?? "")
-    .replace(
-      "__SHIP_CITY__",
-      `${slip.ship_to_address?.city ?? ""}, ${slip.ship_to_address?.province ?? ""} ${slip.ship_to_address?.postal ?? ""}`
-    )
+    .replace("__SHIP_NAME__", shipName ?? "")
+    .replace("__SHIP_ADDRESS__", shipAddress ?? "")
+    .replace("__SHIP_CITY__", shipCity ?? "")
     .replace("__COMMENTS_1__", slip.comments_line1 ?? "")
     .replace("__COMMENTS_2__", slip.comments_line2 ?? "")
     .replace("__ITEM_ROWS__", itemRows);
