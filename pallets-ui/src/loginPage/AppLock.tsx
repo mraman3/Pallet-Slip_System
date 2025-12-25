@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { API_BASE } from "../config/api"; 
+
 
 export function AppLock({ onUnlocked }: { onUnlocked: () => void }) {
   const [password, setPassword] = useState("");
@@ -14,7 +16,8 @@ export function AppLock({ onUnlocked }: { onUnlocked: () => void }) {
     }
 
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_BASE}/unlock`, {
+      const url = `${API_BASE.replace(/\/$/, "")}/unlock`;
+      const res = await fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ password: password.trim() }),
