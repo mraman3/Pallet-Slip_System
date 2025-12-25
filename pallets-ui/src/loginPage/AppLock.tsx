@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { API_BASE } from "../config/api";
-
+import "./AppLock.css";
 
 export function AppLock({ onUnlocked }: { onUnlocked: () => void }) {
   const [password, setPassword] = useState("");
@@ -29,7 +29,7 @@ export function AppLock({ onUnlocked }: { onUnlocked: () => void }) {
 
       // ✅ Only store token AFTER validation
       localStorage.setItem("app_token", password.trim());
-      onUnlocked(); // ← important: no reload
+      onUnlocked(); // no reload
 
     } catch {
       setError("Wrong password");
@@ -37,63 +37,25 @@ export function AppLock({ onUnlocked }: { onUnlocked: () => void }) {
   }
 
   return (
-    <div
-      style={{
-        height: "100vh",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        background: "linear-gradient(0deg,rgba(82, 191, 255, 1) 0%, rgba(255, 164, 79, 1) 50%, rgba(255, 255, 255, 1) 100%)",
-        color: "white",
-        fontFamily: "system-ui",
-        width: "100vw",
-      }}
-    >
-      <form
-        onSubmit={submit}
-        style={{
-          background: "#f0f0f0ff",
-          padding: "2rem",
-          borderRadius: 8,
-          width: "20vw",
-        }}
-      >
-        <h2 style={{ marginBottom: "1rem", display: "flex", justifyContent: "center", color: "#082530ff" }}>LOGIN</h2>
+    <div className="app-lock-container">
+      <form className="app-lock-form" onSubmit={submit}>
+        <h2 className="app-lock-title">LOGIN</h2>
 
         <input
           type="password"
           placeholder="Enter password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          style={{
-            width: "93.5%",
-            padding: "0.9rem",
-            marginBottom: "0.75rem",
-            background: "#e0e0e0",
-            borderRadius: 3,
-            border: "1px solid #ccc",
-            color: "#082530ff", 
-          }}
+          className="app-lock-input"
         />
 
         {error && (
-          <div style={{ color: "#f87171", marginBottom: "0.75rem" }}>
+          <div className="app-lock-error">
             {error}
           </div>
         )}
 
-        <button
-          type="submit"
-          style={{
-            width: "100%",
-            padding: "0.6rem",
-            background: "#225de6ff",
-            color: "white",
-            border: "none",
-            borderRadius: 4,
-            cursor: "pointer",
-          }}
-        >
+        <button type="submit" className="app-lock-button">
           Unlock
         </button>
       </form>

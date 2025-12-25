@@ -1,0 +1,95 @@
+/* =========================
+   Global sizing fix (CRITICAL)
+   ========================= */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+/* =========================
+   Layout
+   ========================= */
+.app-lock-container {
+  height: 100svh;
+  width: 100vw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: linear-gradient(
+    0deg,
+    rgba(82, 191, 255, 1) 0%,
+    rgba(255, 164, 79, 1) 50%,
+    rgba(255, 255, 255, 1) 100%
+  );
+
+  font-family: system-ui;
+}
+
+.app-lock-form {
+  background: #f0f0f0ff;
+  padding: clamp(1.5rem, 4vw, 2.5rem);
+  border-radius: 12px;
+
+  width: clamp(320px, 25vw, 420px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+/* =========================
+   Title
+   ========================= */
+.app-lock-title {
+  margin-bottom: 1rem;
+  text-align: center;
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #082530ff;
+}
+
+/* =========================
+   Input + Button (MATCHED)
+   ========================= */
+.app-lock-input,
+.app-lock-button {
+  width: 100%;
+  height: 44px;              /* 👈 same height */
+  font-size: 1rem;
+  border-radius: 6px;
+}
+
+/* Input */
+.app-lock-input {
+  padding: 0 0.9rem;
+  margin-bottom: 0.75rem;
+  background: #e0e0e0;
+  border: 1px solid #ccc;
+  color: #082530ff;
+}
+
+/* Error */
+.app-lock-error {
+  color: #f87171;
+  margin-bottom: 0.75rem;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+/* Button */
+.app-lock-button {
+  background: #225de6ff;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.app-lock-button:hover {
+  opacity: 0.95;
+}
+
+/* =========================
+   Mobile
+   ========================= */
+@media (max-width: 480px) {
+  .app-lock-form {
+    width: 100%;
+  }
+}
