@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { API_BASE } from "../config/api"; 
+import { API_BASE } from "../config/api";
 
 
 export function AppLock({ onUnlocked }: { onUnlocked: () => void }) {
@@ -43,21 +43,22 @@ export function AppLock({ onUnlocked }: { onUnlocked: () => void }) {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        background: "#0f172a",
+        background: "linear-gradient(0deg,rgba(82, 191, 255, 1) 0%, rgba(255, 164, 79, 1) 50%, rgba(255, 255, 255, 1) 100%)",
         color: "white",
         fontFamily: "system-ui",
+        width: "100vw",
       }}
     >
       <form
         onSubmit={submit}
         style={{
-          background: "#020617",
+          background: "#f0f0f0ff",
           padding: "2rem",
           borderRadius: 8,
-          width: 320,
+          width: "20vw",
         }}
       >
-        <h2 style={{ marginBottom: "1rem" }}>🔒 App Locked</h2>
+        <h2 style={{ marginBottom: "1rem", display: "flex", justifyContent: "center", color: "#082530ff" }}>LOGIN</h2>
 
         <input
           type="password"
@@ -65,9 +66,13 @@ export function AppLock({ onUnlocked }: { onUnlocked: () => void }) {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           style={{
-            width: "100%",
-            padding: "0.6rem",
+            width: "93.5%",
+            padding: "0.9rem",
             marginBottom: "0.75rem",
+            background: "#e0e0e0",
+            borderRadius: 3,
+            border: "1px solid #ccc",
+            color: "#082530ff", 
           }}
         />
 
@@ -82,7 +87,7 @@ export function AppLock({ onUnlocked }: { onUnlocked: () => void }) {
           style={{
             width: "100%",
             padding: "0.6rem",
-            background: "#2563eb",
+            background: "#225de6ff",
             color: "white",
             border: "none",
             borderRadius: 4,
