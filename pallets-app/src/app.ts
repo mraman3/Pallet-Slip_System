@@ -58,7 +58,7 @@ app.use("/api", requireAppAccess);
 app.use("/api/slips", slipsRoutes);
 app.use("/api/slips", slipsPdfRoutes);
 app.use("/api/clients", clientsRoutes);
-app.use("/api/addresses", addressesRoutes);
+app.use("/api/clients/:clientId/addresses", addressesRoutes);
 app.use("/api/pallet-types", palletTypesRoutes);
 app.use("/api/clerks", clerksRoutes);
 
