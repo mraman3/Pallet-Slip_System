@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { API_BASE } from "../../config/api"; 
 import { apiFetch } from "../../config/apiFetch";
 
 type StatusResponse = {
@@ -34,7 +35,7 @@ export default function SettingsPage() {
   const fetchStatus = async () => {
     try {
       setError(null);
-      const res = await apiFetch("/status");
+      const res = await apiFetch(`${API_BASE}/status`);
       const json = await res.json();
       setData(json);
     } catch {
