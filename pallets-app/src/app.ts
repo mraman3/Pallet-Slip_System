@@ -7,12 +7,12 @@ import { requireAppAccess } from "./middleware/appAccess";
 import healthRoutes from "./routes/health";
 import unlockRoutes from "./routes/unlock";
 
-import slipsRoutes from "./routes/slips";
-import slipsPdfRoutes from "./routes/slipsPdf";
-import clientsRoutes from "./routes/clients";
-import addressesRoutes from "./routes/addresses";
-import palletTypesRoutes from "./routes/palletTypes";
-import clerksRoutes from "./routes/clerks";
+import slipsRoutes from "./routes/dataRoutes/slips";
+import slipsPdfRoutes from "./routes/dataRoutes/slipsPdf";
+import clientsRoutes from "./routes/dataRoutes/clients";
+import addressesRoutes from "./routes/dataRoutes/addresses";
+import palletTypesRoutes from "./routes/dataRoutes/palletTypes";
+import clerksRoutes from "./routes/dataRoutes/clerks";
 
 export const app = express();
 
