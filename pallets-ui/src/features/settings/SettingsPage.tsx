@@ -2,33 +2,8 @@ import { useEffect, useState } from "react";
 import { API_BASE } from "../../config/api"; 
 import { apiFetch } from "../../config/apiFetch";
 
-type StatusResponse = {
-  status: "ok" | "degraded" | "critical";
-  timestamp: string;
-  uptimeSeconds: number;
-
-  appLock: {
-    enabled: boolean;
-  };
-
-  db: {
-    status: "up" | "down";
-    latencyMs?: number;
-  };
-
-  pdf: {
-    browser: "initializing" | "ready" | "unavailable";
-    pool: {
-      size: number;
-      max: number;
-      inUse: number;
-      idle: number;
-    };
-  };
-};
-
 export default function SettingsPage() {
-  const [data, setData] = useState<StatusResponse | null>(null);
+  const [raw, setRaw] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -36,9 +11,19 @@ export default function SettingsPage() {
     try {
       setError(null);
       const res = await apiFetch(`${API_BASE}/status`);
-      const json = await res.json();
-      setData(json);
-    } catch {
+
+      // If backend returned HTML or something weird → avoid crash
+      const text = await res.text();
+
+      try {
+        const json = JSON.parse(text);
+        setRaw(json);
+      } catch {
+        setRaw(text); // if not json just show raw
+      }
+
+    } catch (err) {
+      console.error(err);
       setError("Failed to reach server");
     } finally {
       setLoading(false);
@@ -47,98 +32,26 @@ export default function SettingsPage() {
 
   useEffect(() => {
     fetchStatus();
-    const interval = setInterval(fetchStatus, 5000); // refresh every 5s
-    return () => clearInterval(interval);
   }, []);
-
-  const badge = (text: string, color: string) => (
-    <span
-      style={{
-        padding: "6px 10px",
-        borderRadius: 6,
-        color: "white",
-        backgroundColor: color,
-        fontSize: "0.9rem",
-      }}
-    >
-      {text}
-    </span>
-  );
 
   return (
     <div>
-      <h2>System Monitoring Dashboard</h2>
+      <h2>System Monitoring Dashboard (Debug Mode)</h2>
 
-      {loading && <p>Loading system status…</p>}
+      {loading && <p>Loading…</p>}
       {error && <p style={{ color: "red" }}>{error}</p>}
 
-      {data && (
-        <>
-          {/* Global System State */}
-          <div style={{ marginTop: 12, marginBottom: 18 }}>
-            <strong>System Status:</strong>{" "}
-            {data.status === "ok" && badge("Healthy", "green")}
-            {data.status === "degraded" && badge("Degraded", "orange")}
-            {data.status === "critical" && badge("Critical", "red")}
-          </div>
-
-          <div style={{ fontSize: "0.9rem", opacity: 0.8 }}>
-            Updated: {new Date(data.timestamp).toLocaleTimeString()}
-            <br />
-            Uptime: {Math.round(data.uptimeSeconds / 60)} min
-          </div>
-
-          <hr style={{ margin: "18px 0" }} />
-
-          {/* 🔐 App Lock */}
-          {/* <section>
-            <h3>🔐 Application Lock</h3>
-            {data.appLock.enabled
-              ? badge("Enabled", "#0077ff")
-              : badge("Disabled", "gray")}
-          </section> */}
-
-          <hr style={{ margin: "18px 0" }} />
-
-          {/* 🗄 Database */}
-          <section>
-            <h3>🗄 Database</h3>
-            {data.db.status === "up"
-              ? badge("Connected", "green")
-              : badge("Disconnected", "red")}
-
-            {data.db.latencyMs !== undefined && (
-              <p>Latency: {data.db.latencyMs} ms</p>
-            )}
-          </section>
-
-          <hr style={{ margin: "18px 0" }} />
-
-          {/* 🖨 PDF + Puppeteer */}
-          <section>
-            <h3>🖨 PDF Engine (Puppeteer)</h3>
-
-            {data.pdf.browser === "ready" &&
-              badge("Ready", "green")}
-
-            {data.pdf.browser === "initializing" &&
-              badge("Initializing", "orange")}
-
-            {data.pdf.browser === "unavailable" &&
-              badge("Unavailable", "red")}
-
-            <p style={{ marginTop: 12 }}>
-              <strong>Page Pool</strong>
-              <br />
-              Pool Size: {data.pdf.pool.size} / {data.pdf.pool.max}
-              <br />
-              In Use: {data.pdf.pool.inUse}
-              <br />
-              Idle: {data.pdf.pool.idle}
-            </p>
-          </section>
-        </>
-      )}
+      <pre
+        style={{
+          padding: 12,
+          background: "#111",
+          color: "#0f0",
+          borderRadius: 6,
+          overflowX: "auto",
+        }}
+      >
+        {raw ? JSON.stringify(raw, null, 2) : "No data"}
+      </pre>
     </div>
   );
 }
