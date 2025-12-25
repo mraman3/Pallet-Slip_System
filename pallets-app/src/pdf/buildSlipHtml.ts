@@ -77,12 +77,11 @@ export const buildSlipHtml = (slip: any): string => {
 
   //6. Change ship to address to "P/U" if the shipped via is "Pickup"
   const isPickup = slip.shipped_via === "P/U";
-
-const shipName = isPickup ? "" : slip.ship_to_address?.location_name ?? "";
-const shipAddress = isPickup ? "" : slip.ship_to_address?.address ?? "";
-const shipCity = isPickup
-  ? ""
-  : `${slip.ship_to_address?.city ?? ""}, ${slip.ship_to_address?.province ?? ""} ${slip.ship_to_address?.postal ?? ""}`;
+  const shipName = isPickup ? "" : slip.ship_to_address?.location_name ?? "Pick-up";
+  const shipAddress = isPickup ? "" : slip.ship_to_address?.address ?? "&nbsp";
+  const shipCity = isPickup
+    ? ""
+    : `${slip.ship_to_address?.city ?? ""}, ${slip.ship_to_address?.province ?? ""} ${slip.ship_to_address?.postal ?? "&nbsp"}`;
 
   // 7. Replace placeholders
   html = html
