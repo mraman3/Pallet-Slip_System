@@ -48,6 +48,9 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 // -----------------------------
 app.use(healthRoutes); // exposes GET /healthz
 
+// pdf api mounted before auth middleware, to allow link sharing if needed 
+app.use("/api/slips", slipsPdfRoutes);
+
 // App Login Access Middleware
 app.use("/api", unlockRoutes);
 app.use("/api", requireAppAccess);
@@ -56,7 +59,6 @@ app.use("/api", requireAppAccess);
 // API routes
 // -----------------------------
 app.use("/api/slips", slipsRoutes);
-app.use("/api/slips", slipsPdfRoutes);
 app.use("/api/clients", clientsRoutes);
 app.use("/api/clients/:clientId/addresses", addressesRoutes);
 app.use("/api/pallet-types", palletTypesRoutes);
