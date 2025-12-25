@@ -21,7 +21,14 @@ function App() {
   }, []);
 
   if (!token) {
-    return <AppLock onUnlocked={() => setToken(localStorage.getItem("app_token"))} />;
+    return (
+      <AppLock
+        onUnlocked={() => {
+          setToken(localStorage.getItem("app_token"));
+          window.location.reload();   // ← force proper mount
+        }}
+      />
+    );
   }
 
   const [activeTab, setActiveTab] = useState<Tab>("slip");
