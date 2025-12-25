@@ -5,9 +5,10 @@ import { AppLock } from "./loginPage/AppLock";
 import SlipForm from "./features/slips/SlipForm";
 import AdminPage from "./features/admin/AdminPage";
 import SlipSearchPage from "./features/createdSlips/SlipSearchPage";
+import SettingsPage from "./features/settings/SettingsPage";
 
 
-type Tab = "slip" | "admin" | "search";
+type Tab = "slip" | "admin" | "search" | "settings";
 
 function App() {
   const [token, setToken] = useState(
@@ -80,6 +81,22 @@ function App() {
         >
           Find / Recent Slips
         </button>
+        <button
+          type="button"
+          onClick={() => setActiveTab("settings")}
+          style={{
+            padding: "8px 16px",
+            borderRadius: 4,
+            border:
+              activeTab === "settings" ? "2px solid #333" : "1px solid #ccc",
+            backgroundColor:
+              activeTab === "settings" ? "#a6d2f5" : "#486882",
+            cursor: "pointer",
+          }}
+        >
+          Settings
+        </button>
+
       </div>
 
       {/* Page content based on active tab */}
@@ -93,6 +110,7 @@ function App() {
       )}
       {activeTab === "admin" && <AdminPage />}
       {activeTab === "search" && <SlipSearchPage />}
+      {activeTab === "settings" && <SettingsPage />}
     </div>
   );
 }
