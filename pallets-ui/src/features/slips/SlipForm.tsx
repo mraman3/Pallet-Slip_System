@@ -364,6 +364,9 @@ const SlipForm: React.FC<SlipFormProps> = ({
 
   return (
     <form onSubmit={handleSubmit} style={{ maxWidth: 900 }}>
+      <p>
+        Fill in the fields below to create a new slip.
+      </p>
       {message && <div style={{ marginBottom: 8, color: "green" }}>{message}</div>}
       {error && <div style={{ marginBottom: 8, color: "red" }}>{error}</div>}
 

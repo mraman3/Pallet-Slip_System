@@ -1,4 +1,6 @@
 import { useState, useEffect } from "react";
+import "./App.css";
+
 // Login page
 import { AppLock } from "./loginPage/AppLock";
 
@@ -7,13 +9,11 @@ import AdminPage from "./features/admin/AdminPage";
 import SlipSearchPage from "./features/createdSlips/SlipSearchPage";
 import SettingsPage from "./features/settings/SettingsPage";
 
-
 type Tab = "slip" | "admin" | "search" | "settings";
 
 function App() {
-  const [token, setToken] = useState(
-    () => localStorage.getItem("app_token")
-  );
+  const [token, setToken] = useState(() => localStorage.getItem("app_token"));
+  const [activeTab, setActiveTab] = useState<Tab>("slip");
 
   useEffect(() => {
     const handleLock = () => setToken(null);
@@ -26,91 +26,65 @@ function App() {
       <AppLock
         onUnlocked={() => {
           setToken(localStorage.getItem("app_token"));
-          window.location.reload();   // ← force proper mount
+          window.location.reload(); // force proper mount
         }}
       />
     );
   }
 
-  const [activeTab, setActiveTab] = useState<Tab>("slip");
-
   return (
-    <div style={{ padding: "24px", fontFamily: "sans-serif" }}>
-      <h1>Brampton Pallet – Slip System</h1>
-
-      {/* Tabs */}
-      <div style={{ marginBottom: 16, display: "flex", gap: 8 }}>
-        <button
-          type="button"
-          onClick={() => setActiveTab("slip")}
-          style={{
-            padding: "8px 16px",
-            borderRadius: 4,
-            border: activeTab === "slip" ? "2px solid #333" : "1px solid #ccc",
-            backgroundColor: activeTab === "slip" ? "#a6d2f5" : "#486882",
-            cursor: "pointer",
-          }}
-        >
-          Slip Entry
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setActiveTab("admin")}
-          style={{
-            padding: "8px 16px",
-            borderRadius: 4,
-            border: activeTab === "admin" ? "2px solid #333" : "1px solid #ccc",
-            backgroundColor: activeTab === "admin" ? "#a6d2f5" : "#486882",
-            cursor: "pointer",
-          }}
-        >
-          Admin / Master Data
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setActiveTab("search")}
-          style={{
-            padding: "8px 16px",
-            borderRadius: 4,
-            border: activeTab === "search" ? "2px solid #333" : "1px solid #ccc",
-            backgroundColor: activeTab === "search" ? "#a6d2f5" : "#486882",
-            cursor: "pointer",
-          }}
-        >
-          Find / Recent Slips
-        </button>
-        <button
-          type="button"
-          onClick={() => setActiveTab("settings")}
-          style={{
-            padding: "8px 16px",
-            borderRadius: 4,
-            border:
-              activeTab === "settings" ? "2px solid #333" : "1px solid #ccc",
-            backgroundColor:
-              activeTab === "settings" ? "#a6d2f5" : "#486882",
-            cursor: "pointer",
-          }}
-        >
-          Settings
-        </button>
-
+    <div className="app-content">
+      <div className="app-header">
+        <h1 className="app-title">Brampton Pallet – Slip System</h1>
       </div>
+      <div className="app-root">
+        <div className="sidebar">
+          {/* Tabs */}
+          <div className="tab-bar">
+            <button
+              type="button"
+              onClick={() => setActiveTab("slip")}
+              className={`tab-button ${activeTab === "slip" ? "active" : ""}`}
+            >
+              Slip Entry
+            </button>
 
-      {/* Page content based on active tab */}
-      {activeTab === "slip" && (
-        <>
-          <p style={{ marginBottom: "16px" }}>
-            Fill in the fields below to create a new slip.
-          </p>
-          <SlipForm mode={"create"} />
-        </>
-      )}
-      {activeTab === "admin" && <AdminPage />}
-      {activeTab === "search" && <SlipSearchPage />}
-      {activeTab === "settings" && <SettingsPage />}
+            <button
+              type="button"
+              onClick={() => setActiveTab("admin")}
+              className={`tab-button ${activeTab === "admin" ? "active" : ""}`}
+            >
+              Admin / Master Data
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setActiveTab("search")}
+              className={`tab-button ${activeTab === "search" ? "active" : ""}`}
+            >
+              Find / Recent Slips
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setActiveTab("settings")}
+              className={`tab-button ${activeTab === "settings" ? "active" : ""}`}
+            >
+              Settings
+            </button>
+          </div>
+        </div>
+
+
+
+
+
+        {/* Page content */}
+        {activeTab === "slip" && <SlipForm mode="create" />}
+        {activeTab === "admin" && <AdminPage />}
+        {activeTab === "search" && <SlipSearchPage />}
+        {activeTab === "settings" && <SettingsPage />}
+      </div>
     </div>
   );
 }
