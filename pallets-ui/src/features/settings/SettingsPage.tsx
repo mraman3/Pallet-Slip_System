@@ -91,12 +91,12 @@ export default function SettingsPage() {
           <hr style={{ margin: "18px 0" }} />
 
           {/* 🔐 App Lock */}
-          <section>
+          {/* <section>
             <h3>🔐 Application Lock</h3>
             {data.appLock.enabled
               ? badge("Enabled", "#0077ff")
               : badge("Disabled", "gray")}
-          </section>
+          </section> */}
 
           <hr style={{ margin: "18px 0" }} />
 
