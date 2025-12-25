@@ -49,19 +49,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 app.use(healthRoutes); // exposes GET /healthz
 
 // App Login Access Middleware
-
-app.use(unlockRoutes)
-
-app.post("/api/unlock", (req, res) => {
-  const { password } = req.body;
-
-  if (!password || password !== process.env.APP_ACCESS_PASSWORD) {
-    return res.status(401).json({ error: "Invalid password" });
-  }
-
-  res.json({ ok: true });
-});
-
+app.use("/api", unlockRoutes);
 app.use("/api", requireAppAccess);
 
 // -----------------------------
