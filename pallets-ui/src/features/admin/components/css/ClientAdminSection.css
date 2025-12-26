@@ -86,6 +86,7 @@
     font-weight: 500;
     color: #374151;
     cursor: pointer;
+    white-space: nowrap;
 }
 
 .show-inactive-toggle input {

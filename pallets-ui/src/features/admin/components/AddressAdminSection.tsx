@@ -346,7 +346,7 @@ const AddressAdminSection: React.FC<Props> = ({ clientVersion }) => {
                     checked={showInactiveClients}
                     onChange={(e) => setShowInactiveClients(e.target.checked)}
                   />
-                  Show&nbsp;inactive
+                  Show inactive
                 </label>
               </div>
 
@@ -568,7 +568,7 @@ const AddressAdminSection: React.FC<Props> = ({ clientVersion }) => {
                   onChange={(e) => setShowInactive(e.target.checked)}
                   disabled={!selectedClientId}
                 />
-                Show&nbsp;inactive
+                Show inactive
               </label>
             </div>
 

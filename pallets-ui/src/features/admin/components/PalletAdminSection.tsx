@@ -341,7 +341,7 @@ const PalletAdminSection: React.FC = () => {
                   checked={showInactive}
                   onChange={(e) => setShowInactive(e.target.checked)}
                 />
-                Show&nbsp;inactive
+                Show inactive
               </label>
             </div>
 
