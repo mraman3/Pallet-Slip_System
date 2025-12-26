@@ -1,0 +1,30 @@
+/* =========================
+   Edit Slip View
+   ========================= */
+.slip-edit {
+  max-width: 1100px;
+}
+
+.slip-edit-title {
+  margin-top: 0;
+  margin-bottom: 16px;
+  font-size: 20px;
+  font-weight: 600;
+  color: #111827;
+}
+
+/* Back button */
+.slip-edit-back {
+  margin-top: 12px;
+  padding: 6px 12px;
+  font-size: 13px;
+  border-radius: 4px;
+  border: 1px solid #cbd5e1;
+  background: #f8fafc;
+  cursor: pointer;
+}
+
+.slip-edit-back:hover {
+  background: #e6f0ff;
+  border-color: #3b82f6;
+}

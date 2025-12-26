@@ -1,4 +1,6 @@
 import React from "react";
+import "./css/SlipFilters.css"
+
 import type { Client } from "../../../types/domain";
 import type { ClientAddress } from "../../../types/domain";
 import type { PalletType } from "../../../types/domain";
@@ -121,41 +123,41 @@ const SlipFilters: React.FC<Props> = ({
   loading,
 }) => {
   return (
-    <fieldset style={{ marginBottom: 16 }}>
+    <fieldset className="slip-search-filters">
       <legend>Search Filters</legend>
 
-      <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-        {/* Slip number filter */}
-        <label>
-          Slip #<br />
+      <div className="slip-search-field-row">
+        {/* Slip number */}
+        <div className="slip-search-field">
+          <label>Slip #</label>
           <input
             value={slipNumber}
             onChange={(e) => setSlipNumber(e.target.value)}
           />
-        </label>
+        </div>
 
-        {/* Customer order filter */}
-        <label>
-          Customer Order<br />
+        {/* Customer order */}
+        <div className="slip-search-field">
+          <label>Customer Order</label>
           <input
             value={customerOrder}
             onChange={(e) => setCustomerOrder(e.target.value)}
           />
-        </label>
+        </div>
 
-        {/* Client search input */}
-        <label>
-          Client<br />
+        {/* Client search */}
+        <div className="slip-search-field">
+          <label>Client</label>
           <input
             placeholder="Search client..."
             value={clientSearch}
             onChange={(e) => setClientSearch(e.target.value)}
           />
-        </label>
+        </div>
 
         {/* Client selector */}
-        <label>
-          Select Client<br />
+        <div className="slip-search-field">
+          <label>Select Client</label>
           <select
             value={selectedClientId}
             onChange={(e) =>
@@ -172,26 +174,25 @@ const SlipFilters: React.FC<Props> = ({
               )
               .map((c) => (
                 <option key={c.id} value={c.id}>
-                  {c.name}
-                  {!c.active ? " (inactive)" : ""}
+                  {c.name}{!c.active ? " (inactive)" : ""}
                 </option>
               ))}
           </select>
-        </label>
+        </div>
 
-        {/* Address search input */}
-        <label>
-          Ship To Search<br />
+        {/* Address search */}
+        <div className="slip-search-field">
+          <label>Ship To Search</label>
           <input
             placeholder="Search address..."
             value={addressSearch}
             onChange={(e) => setAddressSearch(e.target.value)}
           />
-        </label>
+        </div>
 
         {/* Address selector */}
-        <label>
-          Select Ship To<br />
+        <div className="slip-search-field">
+          <label>Select Ship To</label>
           <select
             value={selectedAddressId}
             onChange={(e) =>
@@ -213,20 +214,20 @@ const SlipFilters: React.FC<Props> = ({
                 </option>
               ))}
           </select>
-        </label>
+        </div>
 
-        {/* Pallet type search input */}
-        <label>
-          Pallet Type Search<br />
+        {/* Pallet type search */}
+        <div className="slip-search-field">
+          <label>Pallet Type Search</label>
           <input
             value={palletTypeSearch}
             onChange={(e) => setPalletTypeSearch(e.target.value)}
           />
-        </label>
+        </div>
 
         {/* Pallet type selector */}
-        <label>
-          Pallet Type<br />
+        <div className="slip-search-field">
+          <label>Pallet Type</label>
           <select
             value={selectedPalletTypeId}
             onChange={(e) =>
@@ -248,16 +249,15 @@ const SlipFilters: React.FC<Props> = ({
               )
               .map((p) => (
                 <option key={p.id} value={p.id}>
-                  {p.name}
-                  {!p.active ? " (inactive)" : ""}
+                  {p.name}{!p.active ? " (inactive)" : ""}
                 </option>
               ))}
           </select>
-        </label>
+        </div>
 
-        {/* Shipped via selector */}
-        <label>
-          Shipped Via<br />
+        {/* Shipped via */}
+        <div className="slip-search-field">
+          <label>Shipped Via</label>
           <select
             value={shippedVia}
             onChange={(e) => setShippedVia(e.target.value as any)}
@@ -266,11 +266,11 @@ const SlipFilters: React.FC<Props> = ({
             <option value="BPI">BPI</option>
             <option value="P/U">P/U</option>
           </select>
-        </label>
+        </div>
 
-        {/* Clerk selector */}
-        <label>
-          Clerk<br />
+        {/* Clerk */}
+        <div className="slip-search-field">
+          <label>Clerk</label>
           <select
             value={selectedClerkId}
             onChange={(e) =>
@@ -287,41 +287,41 @@ const SlipFilters: React.FC<Props> = ({
               )
               .map((c) => (
                 <option key={c.id} value={c.id}>
-                  {c.name}
-                  {!c.active ? " (inactive)" : ""}
+                  {c.name}{!c.active ? " (inactive)" : ""}
                 </option>
               ))}
           </select>
-        </label>
+        </div>
 
-        {/* Date range */}
-        <label>
-          From Date<br />
+        {/* Dates */}
+        <div className="slip-search-field">
+          <label>From Date</label>
           <input
             type="date"
             value={fromDate}
             onChange={(e) => setFromDate(e.target.value)}
           />
-        </label>
+        </div>
 
-        <label>
-          To Date<br />
+        <div className="slip-search-field">
+          <label>To Date</label>
           <input
             type="date"
             value={toDate}
             onChange={(e) => setToDate(e.target.value)}
           />
-        </label>
+        </div>
 
         {/* Search action */}
-        <button
-          type="button"
-          onClick={onSearch}
-          disabled={loading}
-          style={{ alignSelf: "flex-end" }}
-        >
-          {loading ? "Searching..." : "Search"}
-        </button>
+        <div className="slip-search-field slip-search-action">
+          <button
+            type="button"
+            onClick={onSearch}
+            disabled={loading}
+          >
+            {loading ? "Searching..." : "Search"}
+          </button>
+        </div>
       </div>
     </fieldset>
   );

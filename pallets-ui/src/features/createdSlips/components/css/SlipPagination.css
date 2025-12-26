@@ -1,0 +1,40 @@
+/* =========================
+   Slip Pagination
+   ========================= */
+.slip-search-pagination {
+  display: flex;
+  gap: 6px;
+  margin-top: 16px;
+  justify-content: center;
+}
+
+/* Page buttons */
+.slip-search-pagination-button {
+  padding: 4px 8px;
+  font-size: 13px;
+  border-radius: 4px;
+  border: 1px solid #cbd5e1;
+  background: #f8fafc;
+  cursor: pointer;
+}
+
+.slip-search-pagination-button:hover:not(:disabled) {
+  background: #e6f0ff;
+  border-color: #3b82f6;
+}
+
+/* Active page */
+.slip-search-pagination-button.active,
+.slip-search-pagination-button:disabled {
+  font-weight: 600;
+  cursor: default;
+  background: #e6f0ff;
+  border-color: #3b82f6;
+}
+
+/* Ellipsis */
+.slip-search-pagination-ellipsis {
+  padding: 0 6px;
+  font-size: 14px;
+  color: #374151;
+}

@@ -1,4 +1,5 @@
 import React from "react";
+import "./css/SlipPagination.css"
 
 interface Props {
   page: number;
@@ -67,36 +68,37 @@ const SlipPagination: React.FC<Props> = ({
   const pages = buildPages();
 
   return (
-    <div style={{ display: "flex", gap: 6, marginTop: 16 }}>
-      {pages.map((p, idx) => {
-        if (p === "ellipsis") {
-          return (
-            <span key={`ellipsis-${idx}`} style={{ padding: "0 6px" }}>
-              …
-            </span>
-          );
-        }
-
-        const isActive = p === page;
-
+  <div className="slip-search-pagination">
+    {pages.map((p, idx) => {
+      if (p === "ellipsis") {
         return (
-          <button
-            key={p}
-            type="button"
-            onClick={() => onPageChange(p)}
-            disabled={isActive}
-            style={{
-              padding: "4px 8px",
-              fontWeight: isActive ? "bold" : "normal",
-              cursor: isActive ? "default" : "pointer",
-            }}
+          <span
+            key={`ellipsis-${idx}`}
+            className="slip-search-pagination-ellipsis"
           >
-            {p}
-          </button>
+            …
+          </span>
         );
-      })}
-    </div>
-  );
+      }
+
+      const isActive = p === page;
+
+      return (
+        <button
+          key={p}
+          type="button"
+          onClick={() => onPageChange(p)}
+          disabled={isActive}
+          className={`slip-search-pagination-button ${
+            isActive ? "active" : ""
+          }`}
+        >
+          {p}
+        </button>
+      );
+    })}
+  </div>
+);
 };
 
 export default SlipPagination;

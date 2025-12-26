@@ -1,4 +1,6 @@
 import React from "react";
+import "./css/SlipResultsTable.css"
+
 import type { SlipWithRelations } from "../../../types/slipApi";
 
 //import api
@@ -57,72 +59,93 @@ const SlipResultsTable: React.FC<Props> = ({
   sortIcon,
 }) => {
   return (
-    <table style={{ width: "100%", borderCollapse: "collapse" }}>
-      {/* Table header: sortable columns */}
-      <thead style={{ textAlign: "left" }}>
-        <tr>
-          <th onClick={() => onSort("slip_number")} style={{ cursor: "pointer" }}>
-            Slip #{sortIcon("slip_number")}
-          </th>
+    <div className="slip-search-table-wrapper">
+      <table className="slip-search-table">
+        <thead>
+          <tr>
+            <th
+              className="sortable"
+              onClick={() => onSort("slip_number")}
+            >
+              Slip #{sortIcon("slip_number")}
+            </th>
 
-          <th onClick={() => onSort("date")} style={{ cursor: "pointer" }}>
-            Date{sortIcon("date")}
-          </th>
+            <th
+              className="sortable"
+              onClick={() => onSort("date")}
+            >
+              Date{sortIcon("date")}
+            </th>
 
-          <th onClick={() => onSort("client")} style={{ cursor: "pointer" }}>
-            Client{sortIcon("client")}
-          </th>
+            <th
+              className="sortable"
+              onClick={() => onSort("client")}
+            >
+              Client{sortIcon("client")}
+            </th>
 
-          <th onClick={() => onSort("ship_to")} style={{ cursor: "pointer" }}>
-            Ship To{sortIcon("ship_to")}
-          </th>
+            <th
+              className="sortable"
+              onClick={() => onSort("ship_to")}
+            >
+              Ship To{sortIcon("ship_to")}
+            </th>
 
-          <th onClick={() => onSort("clerk")} style={{ cursor: "pointer" }}>
-            Clerk{sortIcon("clerk")}
-          </th>
+            <th
+              className="sortable"
+              onClick={() => onSort("clerk")}
+            >
+              Clerk{sortIcon("clerk")}
+            </th>
 
-          <th onClick={() => onSort("shipped_via")} style={{ cursor: "pointer" }}>
-            Via{sortIcon("shipped_via")}
-          </th>
+            <th
+              className="sortable"
+              onClick={() => onSort("shipped_via")}
+            >
+              Via{sortIcon("shipped_via")}
+            </th>
 
-          {/* Actions column (not sortable) */}
-          <th />
-        </tr>
-      </thead>
-
-      {/* Table body: slip rows */}
-      <tbody>
-        {slips.map((s) => (
-          <tr key={s.id}>
-            <td>{s.slip_number}</td>
-
-            {/* ISO date trimmed to YYYY-MM-DD */}
-            <td>{s.date.slice(0, 10)}</td>
-
-            <td>{s.client.name}</td>
-            <td>{s.ship_to_address.location_name}</td>
-            <td>{s.clerk.name}</td>
-            <td>{s.shipped_via}</td>
-
-            {/* Row-level actions */}
-            <td style={{ textAlign: "right" }}>
-              <button type="button" onClick={() => onEdit(s.id)}>
-                Edit
-              </button>
-
-              <button
-                type="button"
-                onClick={() =>
-                  window.open(`${API_BASE}/slips/${s.id}/pdf`, "_blank", "noopener,noreferrer")
-                }
-              >
-                Print
-              </button>
-            </td>
+            {/* Actions column */}
+            <th className="actions" />
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+
+        <tbody>
+          {slips.map((s) => (
+            <tr key={s.id}>
+              <td>{s.slip_number}</td>
+              <td>{s.date.slice(0, 10)}</td>
+              <td>{s.client.name}</td>
+              <td>{s.ship_to_address.location_name}</td>
+              <td>{s.clerk.name}</td>
+              <td>{s.shipped_via}</td>
+
+              <td className="actions">
+                <button
+                  type="button"
+                  onClick={() => onEdit(s.id)}
+                >
+                  Edit
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    window.open(
+                      `${API_BASE}/slips/${s.id}/pdf`,
+                      "_blank",
+                      "noopener,noreferrer"
+                    )
+                  }
+                >
+                  Print
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 };
 

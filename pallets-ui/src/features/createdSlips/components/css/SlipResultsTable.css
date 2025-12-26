@@ -1,0 +1,79 @@
+/* =========================
+   Slip Results Table
+   ========================= */
+
+/* Wrapper (scroll + border) */
+.slip-search-table-wrapper {
+  max-height: 420px;
+  overflow-y: auto;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+}
+
+/* Table base */
+.slip-search-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+/* Header */
+.slip-search-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: #f1f5f9;
+  text-align: left;
+  padding: 6px;
+  border-bottom: 1px solid #cbd5e1;
+  font-weight: 600;
+}
+
+/* Sortable headers */
+.slip-search-table th.sortable {
+  cursor: pointer;
+}
+
+/* Body cells */
+.slip-search-table td {
+  padding: 6px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+/* Actions column */
+.slip-search-table th.actions,
+.slip-search-table td.actions {
+  text-align: right;
+  width: 1%;
+  white-space: nowrap;
+}
+
+/* Action buttons */
+.slip-search-table td.actions button {
+  padding: 4px 8px;
+  font-size: 13px;
+  border-radius: 4px;
+  border: 1px solid #cbd5e1;
+  background: #2563eb;
+  cursor: pointer;
+  color: #ffffff;
+  margin-left: 6px;
+}
+
+.slip-search-table td.actions button:hover {
+  background: #1d4ed8;
+}
+
+/* Inactive rows (future-proofing) */
+.slip-search-table tr.inactive {
+  opacity: 0.6;
+}
+
+/* =========================
+   Responsive
+   ========================= */
+@media (max-width: 500px) {
+  .slip-search-table {
+    font-size: 12px;
+  }
+}

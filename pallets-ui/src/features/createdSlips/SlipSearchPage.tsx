@@ -1,5 +1,6 @@
 // src/features/createdSlips/SlipSearchPage.tsx
 import React, { useEffect, useState } from "react";
+import "./SlipSearchPage.css"
 
 // import api base
 import { API_BASE } from "../../config/api";
@@ -217,58 +218,63 @@ const SlipSearchPage: React.FC = () => {
   // RENDER: SEARCH MODE
   // -------------------------
   return (
-    <div style={{ maxWidth: 1100 }}>
-      <h2>Find / Recent Slips</h2>
+    <div className="slip-search">
+      <header className="slip-search-header">
+        <h3>Find / Recent Slips</h3>
+        <p>Search, filter, and edit previously created slips.</p>
+      </header>
 
       {/* Filter controls */}
-      <SlipFilters
-        slipNumber={slipNumber}
-        customerOrder={customerOrder}
-        shippedVia={shippedVia}
-        fromDate={fromDate}
-        toDate={toDate}
+      <section className="slip-search-filters">
+        <SlipFilters
+          slipNumber={slipNumber}
+          customerOrder={customerOrder}
+          shippedVia={shippedVia}
+          fromDate={fromDate}
+          toDate={toDate}
 
-        selectedClientId={selectedClientId}
-        selectedAddressId={selectedAddressId}
-        selectedPalletTypeId={selectedPalletTypeId}
-        selectedClerkId={selectedClerkId}
+          selectedClientId={selectedClientId}
+          selectedAddressId={selectedAddressId}
+          selectedPalletTypeId={selectedPalletTypeId}
+          selectedClerkId={selectedClerkId}
 
-        clientSearch={clientSearch}
-        addressSearch={addressSearch}
-        palletTypeSearch={palletTypeSearch}
+          clientSearch={clientSearch}
+          addressSearch={addressSearch}
+          palletTypeSearch={palletTypeSearch}
 
-        setSlipNumber={setSlipNumber}
-        setCustomerOrder={setCustomerOrder}
-        setShippedVia={setShippedVia}
-        setFromDate={setFromDate}
-        setToDate={setToDate}
+          setSlipNumber={setSlipNumber}
+          setCustomerOrder={setCustomerOrder}
+          setShippedVia={setShippedVia}
+          setFromDate={setFromDate}
+          setToDate={setToDate}
 
-        setSelectedClientId={setSelectedClientId}
-        setSelectedAddressId={setSelectedAddressId}
-        setSelectedPalletTypeId={setSelectedPalletTypeId}
-        setSelectedClerkId={setSelectedClerkId}
+          setSelectedClientId={setSelectedClientId}
+          setSelectedAddressId={setSelectedAddressId}
+          setSelectedPalletTypeId={setSelectedPalletTypeId}
+          setSelectedClerkId={setSelectedClerkId}
 
-        setClientSearch={setClientSearch}
-        setAddressSearch={setAddressSearch}
-        setPalletTypeSearch={setPalletTypeSearch}
+          setClientSearch={setClientSearch}
+          setAddressSearch={setAddressSearch}
+          setPalletTypeSearch={setPalletTypeSearch}
 
-        clientResults={clientResults}
-        addressResults={addressResults}
-        palletTypes={palletTypes}
-        clerks={clerks}
+          clientResults={clientResults}
+          addressResults={addressResults}
+          palletTypes={palletTypes}
+          clerks={clerks}
 
-        onSearch={fetchSlips}
-        loading={loading}
-      />
+          onSearch={fetchSlips}
+          loading={loading}
+        />
+      </section>
 
       {/* Results / status */}
       {loading && <p>Loading slips...</p>}
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      {error && <p className="status error">{error}</p>}
 
       {!loading && results.length === 0 && <p>No slips found.</p>}
 
       {results.length > 0 && (
-        <>
+        <section className="slip-search-results">
           <SlipResultsTable
             slips={sortedResults}
             onEdit={handleEdit}
@@ -281,7 +287,7 @@ const SlipSearchPage: React.FC = () => {
             totalPages={totalPages}
             onPageChange={setPage}
           />
-        </>
+        </section>
       )}
     </div>
   );

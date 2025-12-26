@@ -1,4 +1,6 @@
 import React from "react";
+import "./css/EditSlipView.css"
+
 import SlipForm from "../../slips/SlipForm";
 import type { SlipWithRelations } from "../../../types/slipApi";
 
@@ -30,9 +32,11 @@ interface Props {
  */
 const EditSlipView: React.FC<Props> = ({ slip, onBack, onSaved }) => {
   return (
-    <div>
+    <div className="slip-edit">
       {/* Page title */}
-      <h2>Edit Slip #{slip.slip_number}</h2>
+      <h2 className="slip-edit-title">
+        Edit Slip #{slip.slip_number}
+      </h2>
 
       {/* Edit form */}
       <SlipForm
@@ -44,7 +48,7 @@ const EditSlipView: React.FC<Props> = ({ slip, onBack, onSaved }) => {
       {/* Navigation back to search */}
       <button
         type="button"
-        style={{ marginTop: 12 }}
+        className="slip-edit-back"
         onClick={onBack}
       >
         Back to Search
