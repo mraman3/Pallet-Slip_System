@@ -1,6 +1,7 @@
 // src/features/admin/components/ClerkAdminSection.tsx
 import React, { useEffect, useState } from "react";
 import "./css/ClerkAdminSection.css"
+import "../AdminPage.css"
 
 //import api
 import { API_BASE } from "../../../config/api";

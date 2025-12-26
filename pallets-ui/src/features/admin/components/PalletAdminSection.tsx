@@ -1,6 +1,7 @@
 // src/features/admin/components/PalletAdminSection.tsx
 import React, { useEffect, useState } from "react";
 import "./css/PalletAdminSection.css"
+import "../AdminPage.css"
 
 //import api 
 import { API_BASE } from "../../../config/api";

@@ -78,22 +78,6 @@
     margin: 0;
 }
 
-/* Show inactive toggle */
-.show-inactive-toggle {
-    display: flex;
-    align-items: center;
-    font-size: 13px;
-    font-weight: 500;
-    color: #374151;
-    cursor: pointer;
-    white-space: nowrap;
-}
-
-.show-inactive-toggle input {
-    cursor: pointer;
-}
-
-
 /* =========================
    Client table
    ========================= */
