@@ -157,14 +157,15 @@
     font-size: 13px;
     border-radius: 4px;
     border: 1px solid #cbd5e1;
-    background: #ffffff;
+    background: #2563eb;
     cursor: pointer;
+    color: #ffffff;
 }
 
 .update-admin-button:hover,
 .admin-table td.actions button:hover,
 .add-admin-button:hover {
-    background: #f1f5f9;
+    background: #1d4ed8;
 }
 
 /* =========================
