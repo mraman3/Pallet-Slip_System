@@ -73,6 +73,7 @@
     color: #374151;
     cursor: pointer;
     white-space: nowrap;
+    width: fit-content;
 }
 
 .show-inactive-toggle input {
