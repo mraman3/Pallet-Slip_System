@@ -43,7 +43,7 @@
 /* =========================
    Section spacing
    ========================= */
-.slip-form > * + * {
+.slip-form>*+* {
   margin-top: 20px;
 }
 
@@ -81,6 +81,18 @@
 .slip-form textarea:disabled {
   background: #f1f5f9;
   cursor: not-allowed;
+}
+
+/* Override base form field styles JUST for date inputs */
+.slip-form input[type="date"] {
+  -webkit-appearance: none;
+  appearance: none;
+  font-size: 16px;
+  /* prevents iOS zoom / resizing */
+  min-height: 40px;
+  /* keeps consistent height */
+  padding: 8px 10px;
+  /* re-apply padding because iOS strips it */
 }
 
 /* =========================

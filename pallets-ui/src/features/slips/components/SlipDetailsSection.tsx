@@ -55,6 +55,7 @@ const SlipDetailsSection: React.FC<Props> = ({
             type="date"
             value={date}
             onChange={(e) => setDate(e.target.value)}
+            className="slip-date"
           />
         </label>
 
@@ -66,16 +67,16 @@ const SlipDetailsSection: React.FC<Props> = ({
             onChange={(e) => setCustomerOrder(e.target.value)}
           />
         </label>
-      </div>
 
-      {/* Date Shipped + Clerk */}
-      <div className="slip-details-grid">
+
+        {/* Date Shipped + Clerk */}
         <label>
           Date Shipped:
           <input
             type="date"
             value={dateShipped}
             onChange={(e) => setDateShipped(e.target.value)}
+            className="slip-date"
           />
         </label>
 
