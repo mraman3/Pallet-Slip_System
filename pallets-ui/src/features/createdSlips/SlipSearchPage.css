@@ -8,8 +8,9 @@
 /* =========================
    Header
    ========================= */
-.slip-search-header{
-  
+.slip-search-header {
+  display: flex;
+  justify-content: space-between;
 }
 
 .slip-search-header h3 {
