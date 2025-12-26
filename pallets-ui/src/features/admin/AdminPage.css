@@ -68,12 +68,11 @@
 .show-inactive-toggle {
     display: flex;
     align-items: center;
-    font-size: 13px;
+    font-size: 16px;
     font-weight: 500;
     color: #374151;
     cursor: pointer;
     white-space: nowrap;
-    width: fit-content;
 }
 
 .show-inactive-toggle input {
