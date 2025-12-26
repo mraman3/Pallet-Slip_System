@@ -1,0 +1,185 @@
+/* =========================
+   Admin – Base (shared)
+   ========================= */
+.admin-section fieldset {
+  border: 1px solid #adb3c3;
+  border-radius: 6px;
+  padding: 12px 16px;
+  margin-bottom: 25px;
+}
+
+.admin-section legend {
+  padding: 0 6px;
+  font-size: 20px;
+  font-weight: 600;
+  color: #111827;
+}
+
+/* add - edit buttons */
+.admin-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.admin-tabs button {
+    padding: 6px 12px;
+    border-radius: 4px;
+    border: 1px solid #cbd5e1;
+    background: #f8fafc;
+    cursor: pointer;
+}
+
+.admin-tabs button.active {
+    background: #e6f0ff;
+    border-color: #3b82f6;
+    font-weight: 600;
+}
+
+/* search bars, dropdowns, radio buttons */
+.admin-section input,
+.admin-section select,
+.admin-section textarea {
+  width: 100%;
+  padding: 8px 10px;
+  font-size: 14px;
+  border-radius: 4px;
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  color: #1f2933;
+}
+
+.admin-section input:focus,
+.admin-section select:focus,
+.admin-section textarea:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.4);
+}
+
+.admin-section input:disabled,
+.admin-section select:disabled,
+.admin-section textarea:disabled {
+  background: #f1f5f9;
+  cursor: not-allowed;
+}
+
+/* Left side of admin form */
+.admin-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.admin-form h4 {
+  margin-top: 0;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.admin-form label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #374151;
+}
+
+/* Grid row: City / Province / Postal */
+.field-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 8px;
+}
+
+/* SHARED TABLE CSS --------------------------------------*/
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.admin-table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background: #f1f5f9;
+    text-align: left;
+    padding: 6px;
+    border-bottom: 1px solid #cbd5e1;
+    font-weight: 600;
+}
+
+/* Cells */
+.admin-table td {
+    padding: 6px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+/* Inactive rows */
+.admin-table tr.inactive {
+    opacity: 0.6;
+}
+
+/* Actions column */
+.admin-table th.actions,
+.admin-table td.actions {
+    text-align: right;
+    width: 1%;
+}
+
+/* Action buttons */
+.update-admin-button,
+.admin-table td.actions button,
+.add-admin-button {
+    padding: 4px 8px;
+    font-size: 13px;
+    border-radius: 4px;
+    border: 1px solid #cbd5e1;
+    background: #ffffff;
+    cursor: pointer;
+}
+
+.update-admin-button:hover,
+.admin-table td.actions button:hover,
+.add-admin-button:hover {
+    background: #f1f5f9;
+}
+
+/* =========================
+   Responsive
+   ========================= */
+@media (max-width: 900px) {
+    .client-admin-layout {
+        flex-direction: column;
+    }
+    .address-admin-layout {
+        flex-direction: column;
+    }
+    .pallet-admin-layout {
+        flex-direction: column;
+    }
+    .clerk-admin-layout {
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 700px) {
+    .field-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 500px) {
+    .admin-table {
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 400px) {
+    .client-admin-table {
+        font-size: 10px;
+    }
+}

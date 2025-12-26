@@ -1,0 +1,105 @@
+/* =========================
+   Client Admin – Base
+   ========================= */
+
+
+.client-admin {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Header */
+.client-admin-header h3 {
+    margin: 0;
+}
+
+.client-admin-header p {
+    margin: 4px 0 16px;
+    color: #475569;
+    font-size: 14px;
+}
+
+/* =========================
+   Layout
+   ========================= */
+.client-admin-layout {
+    display: flex;
+    gap: 24px;
+}
+
+.client-admin-main {
+    flex: 1;
+    min-width: 320px;
+}
+
+.client-admin-sidebar {
+    flex: 1;
+    min-width: 300px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* =========================
+   Client search / select
+   ========================= */
+.client-admin-search {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* =========================
+   Status messages
+   ========================= */
+.status {
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.status.success {
+    color: #065f46;
+}
+
+.status.error {
+    color: #991b1b;
+}
+
+/* =========================
+   Sidebar header
+   ========================= */
+.client-admin-sidebar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.client-admin-sidebar-header h4 {
+    margin: 0;
+}
+
+/* Show inactive toggle */
+.show-inactive-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    font-size: 13px;
+    font-weight: 500;
+    color: #374151;
+    cursor: pointer;
+}
+
+.show-inactive-toggle input {
+    cursor: pointer;
+}
+
+
+/* =========================
+   Client table
+   ========================= */
+.client-table-wrapper {
+    max-height: 436px;
+    overflow-y: auto;
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+}

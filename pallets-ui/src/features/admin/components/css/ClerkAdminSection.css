@@ -1,0 +1,75 @@
+/* =========================
+   Clerk Admin – Base
+   ========================= */
+.clerk-admin {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header */
+.clerk-admin-header p {
+  margin: 4px 0 16px;
+  color: #475569;
+  font-size: 14px;
+}
+
+/* =========================
+   Layout
+   ========================= */
+.clerk-admin-layout {
+  display: flex;
+  gap: 24px;
+}
+
+.clerk-admin-main {
+  flex: 1;
+  min-width: 320px;
+}
+
+.clerk-admin-sidebar {
+  flex: 1;
+  min-width: 300px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* =========================
+   Sidebar header
+   ========================= */
+.clerk-admin-sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.clerk-admin-sidebar-header h4 {
+  margin: 0;
+}
+
+/* =========================
+   Status messages
+   ========================= */
+.status {
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.status.success {
+  color: #065f46;
+}
+
+.status.error {
+  color: #991b1b;
+}
+
+/* =========================
+   Clerk table
+   ========================= */
+.clerk-table-wrapper {
+  max-height: 295px;
+  overflow-y: auto;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+}
+

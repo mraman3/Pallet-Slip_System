@@ -1,5 +1,6 @@
 // src/features/admin/components/PalletAdminSection.tsx
 import React, { useEffect, useState } from "react";
+import "./css/PalletAdminSection.css"
 
 //import api 
 import { API_BASE } from "../../../config/api";
@@ -210,297 +211,181 @@ const PalletAdminSection: React.FC = () => {
   };
 
   return (
-    <div>
-      <h3 style={{ marginBottom: 0 }}>Pallet Types</h3>
-      <p style={{ marginBottom: 12, marginTop: 0 }}>
-        Manage the list of pallet types available on slips.
-      </p>
+    <fieldset className="pallet-section">
+      <legend>Pallet Types</legend>
+      <div className="pallet-admin">
+        <header className="pallet-admin-header">
+          <p>Manage the list of pallet types available on slips.</p>
+        </header>
 
-      {/* Search bar (used for list + edit dropdown) */}
-      <div style={{ marginBottom: 12 }}>
-        <label style={{ display: "block", marginBottom: 4 }}>
-          Search pallet types
-        </label>
-        <input
-          type="text"
-          value={palletSearch}
-          onChange={(e) => setPalletSearch(e.target.value)}
-          placeholder='e.g. 48"x40" #2 4-way'
-          style={{ width: "100%" }}
-        />
-      </div>
+        {/* Layout: left = forms with tabs, right = list */}
+        <div className="pallet-admin-layout">
 
-      {/* Layout: left = forms with tabs, right = list */}
-      <div style={{ display: "flex", gap: 24, alignItems: "flex-start" }}>
-        {/* Left: tabs + forms */}
-        <div style={{ flex: 1, minWidth: 320 }}>
-          {/* Tabs */}
-          <div style={{ marginBottom: 12, display: "flex", gap: 8 }}>
-            <button
-              type="button"
-              onClick={() => setActiveTab("add")}
-              style={{
-                padding: "6px 12px",
-                borderRadius: 4,
-                border:
-                  activeTab === "add" ? "2px solid #333" : "1px solid #ccc",
-                backgroundColor: activeTab === "add" ? "#a6d2f5" : "#486882",
-                cursor: "pointer",
-              }}
-            >
-              Add Pallet Type
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveTab("edit")}
-              style={{
-                padding: "6px 12px",
-                borderRadius: 4,
-                border:
-                  activeTab === "edit" ? "2px solid #333" : "1px solid #ccc",
-                backgroundColor: activeTab === "edit" ? "#a6d2f5" : "#486882",
-                cursor: "pointer",
-              }}
-            >
-              Edit Pallet Type
-            </button>
-          </div>
-
-          {activeTab === "add" ? (
-            <section>
-              <h4>Add Pallet Type</h4>
-
-              {addMessage && (
-                <div style={{ marginBottom: 8, color: "green" }}>
-                  {addMessage}
-                </div>
-              )}
-              {addError && (
-                <div style={{ marginBottom: 8, color: "red" }}>
-                  {addError}
-                </div>
-              )}
-
-              <form onSubmit={handleAddSubmit}>
-                <div style={{ marginBottom: 8 }}>
-                  <label style={{ display: "block", marginBottom: 4 }}>
-                    Name / Description
-                  </label>
-                  <input
-                    name="name"
-                    type="text"
-                    value={addForm.name}
-                    onChange={handleAddChange}
-                    style={{ width: "100%" }}
-                    placeholder='e.g. 48" x 40" #2 4-way'
-                  />
-                </div>
-
-                <button type="submit" disabled={addSubmitting}>
-                  {addSubmitting ? "Saving..." : "Add Pallet Type"}
-                </button>
-              </form>
-            </section>
-          ) : (
-            <section>
-              <h4>Edit Pallet Type</h4>
-
-              {editMessage && (
-                <div style={{ marginBottom: 8, color: "green" }}>
-                  {editMessage}
-                </div>
-              )}
-              {editError && (
-                <div style={{ marginBottom: 8, color: "red" }}>
-                  {editError}
-                </div>
-              )}
-
-              <div style={{ marginBottom: 8 }}>
-                <label style={{ display: "block", marginBottom: 4 }}>
-                  Select pallet type
-                </label>
-                <select
-                  value={selectedPalletId}
-                  onChange={(e) =>
-                    setSelectedPalletId(
-                      e.target.value ? Number(e.target.value) : ""
-                    )
-                  }
-                  style={{ width: "100%" }}
-                >
-                  <option value="">-- Select --</option>
-                  {pallets.map((p) => (
-                    <option key={p.id} value={p.id}>
-                      {p.name}
-                      {p.active === false ? " (inactive)" : ""}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <form onSubmit={handleEditSubmit}>
-                <div style={{ marginBottom: 8 }}>
-                  <label style={{ display: "block", marginBottom: 4 }}>
-                    Name / Description
-                  </label>
-                  <input
-                    name="name"
-                    type="text"
-                    value={editForm.name}
-                    onChange={handleEditChange}
-                    style={{ width: "100%" }}
-                    disabled={!selectedPalletId}
-                  />
-                </div>
-
-                <button
-                  type="submit"
-                  disabled={editSubmitting || !selectedPalletId}
-                >
-                  {editSubmitting ? "Updating..." : "Update Pallet Type"}
-                </button>
-              </form>
-            </section>
-          )}
-        </div>
-
-        {/* Right: pallet type list */}
-        <div style={{ flex: 1, minWidth: 300 }}>
-          <div style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-          }}
-          >
-            <h4>Existing Pallet Types</h4>
-            <label style={{ fontSize: 14 }}>
-              <input
-                type="checkbox"
-                checked={showInactive}
-                onChange={(e) => setShowInactive(e.target.checked)}
-                style={{ marginRight: 6 }}
-              />
-              Show inactive
-            </label>
-          </div>
-          {loading ? (
-            <p>Loading pallet types...</p>
-          ) : pallets.length === 0 ? (
-            <p>No pallet types found.</p>
-          ) : (
-            <div
-              style={{
-                maxHeight: "200px",
-                overflowY: "auto",
-                border: "1px solid #ddd",
-                borderRadius: 4,
-              }}
-            >
-              <table
-                style={{
-                  width: "100%",
-                  borderCollapse: "collapse",
-                  fontSize: 14,
-                }}
+          {/* Left: tabs + forms */}
+          <div className="pallet-admin-main">
+            {/* Tabs */}
+            <div className="admin-tabs pallet-admin-tabs">
+              <button
+                type="button"
+                onClick={() => setActiveTab("add")}
+                className={activeTab === "add" ? "active" : ""}
               >
-                <thead>
-                  <tr>
-                    <th
-                      style={{
-                        borderBottom: "1px solid #ccc",
-                        textAlign: "left",
-                        padding: "4px 2px",
-                        position: "sticky",
-                        top: 0,
-                        background: "#486882",
-                      }}
-                    >
-                      Name / Description
-                    </th>
-                    <th
-                      style={{
-                        borderBottom: "1px solid #ccc",
-                        textAlign: "left",
-                        padding: "4px 2px",
-                        position: "sticky",
-                        top: 0,
-                        background: "#486882",
-                      }}
-                    >
-                      Status
-                    </th>
-                    <th
-                      style={{
-                        borderBottom: "1px solid #ccc",
-                        textAlign: "center",
-                        padding: "4px 2px",
-                        position: "sticky",
-                        top: 0,
-                        background: "#486882",
-                      }}
-                    >
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {pallets.map((p) => (
-                    <tr key={p.id} style={{ opacity: p.active ? 1 : 0.6 }}>
-                      <td
-                        style={{
-                          borderBottom: "1px solid #eee",
-                          padding: "4px 2px",
-                        }}
-                      >
-                        {p.name}
-                      </td>
-
-                      <td
-                        style={{
-                          borderBottom: "1px solid #eee",
-                          padding: "4px 2px",
-                        }}
-                      >
-                        {p.active ? "Active" : "Inactive"}
-                      </td>
-
-                      <td
-                        style={{
-                          borderBottom: "1px solid #eee",
-                          padding: "4px",
-                          textAlign: "right",
-                          whiteSpace: "nowrap",
-                          width: "0%"
-                        }}
-                      >
-                        {p.active ? (
-                          <button
-                            type="button"
-                            onClick={() => togglePalletActive(p.id, false)}
-                            style={{ cursor: "pointer" }}
-                          >
-                            Disable
-                          </button>
-                        ) : (
-                          <button
-                            type="button"
-                            onClick={() => togglePalletActive(p.id, true)}
-                            style={{ cursor: "pointer" }}
-                          >
-                            Enable
-                          </button>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                Add Pallet Type
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab("edit")}
+                className={activeTab === "edit" ? "active" : ""}
+              >
+                Edit Pallet Type
+              </button>
             </div>
-          )}
+
+            {/* Search bar (used for list + edit dropdown) */}
+            <div className="field">
+              <label>Search pallet types</label>
+              <input
+                type="text"
+                value={palletSearch}
+                onChange={(e) => setPalletSearch(e.target.value)}
+                placeholder='e.g. 48"x40" #2 4-way'
+              />
+            </div>
+
+            {activeTab === "add" ? (
+              <section className="admin-form">
+                <h4>Add Pallet Type</h4>
+                {addMessage && (
+                  <div className="status success">
+                    {addMessage}
+                  </div>
+                )}
+                {addError && (
+                  <div className="status error">
+                    {addError}
+                  </div>
+                )}
+
+                <form onSubmit={handleAddSubmit} className="admin-form">
+                  <div className="field">
+                    <label>Name / Description</label>
+                    <input
+                      name="name"
+                      type="text"
+                      value={addForm.name}
+                      onChange={handleAddChange}
+                      placeholder='e.g. 48" x 40" #2 4-way'
+                    />
+                  </div>
+
+                  <button type="submit" disabled={addSubmitting} className="add-admin-button">
+                    {addSubmitting ? "Saving..." : "Add Pallet Type"}
+                  </button>
+                </form>
+              </section>
+            ) : (
+              <section className="admin-form">
+                <h4>Edit Pallet Type</h4>
+
+                {editMessage && <div className="status success">{editMessage}</div>}
+                {editError && <div className="status error">{editError}</div>}
+
+                <div className="field">
+                  <label>Select pallet type</label>
+                  <select
+                    value={selectedPalletId}
+                    onChange={(e) =>
+                      setSelectedPalletId(
+                        e.target.value ? Number(e.target.value) : ""
+                      )
+                    }
+                  >
+                    <option value="">-- Select --</option>
+                    {pallets.map((p) => (
+                      <option key={p.id} value={p.id}>
+                        {p.name}
+                        {p.active === false ? " (inactive)" : ""}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Form auto-filled with selected pallet */}
+                <form onSubmit={handleEditSubmit} className="admin-form">
+                  <div className="field">
+                    <label>Name / Description</label>
+                    <input
+                      name="name"
+                      type="text"
+                      value={editForm.name}
+                      onChange={handleEditChange}
+                      disabled={!selectedPalletId}
+                    />
+                  </div>
+
+                  <button type="submit" disabled={editSubmitting || !selectedPalletId} className="update-admin-button">
+                    {editSubmitting ? "Updating..." : "Update Pallet Type"}
+                  </button>
+                </form>
+              </section>
+            )}
+          </div>
+
+          {/* Right: pallet type list */}
+          <aside className="pallet-admin-sidebar">
+            <div className="pallet-admin-sidebar-header">
+              <h4>Existing Pallet Types</h4>
+              <label className="show-inactive-toggle">
+                <input
+                  type="checkbox"
+                  checked={showInactive}
+                  onChange={(e) => setShowInactive(e.target.checked)}
+                />
+                Show&nbsp;inactive
+              </label>
+            </div>
+
+            {loading ? (
+              <p>Loading pallet types...</p>
+            ) : pallets.length === 0 ? (
+              <p>No pallet types found.</p>
+            ) : (
+              <div className="pallet-table-wrapper">
+                {/*Table header */}
+                <table className="admin-table pallet-admin-table">
+                  <thead>
+                    <tr>
+                      <th>Name / Description</th>
+                      <th>Status</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {pallets.map((p) => (
+                      <tr key={p.id} className={!p.active ? "inactive" : undefined}>
+                        <td>{p.name}</td>
+                        <td>{p.active ? "Active" : "Inactive"}</td>
+                        <td className="actions">
+                          {p.active ? (
+                            <button type="button" onClick={() => togglePalletActive(p.id, false)}>
+                              Disable
+                            </button>
+                          ) : (
+                            <button type="button" onClick={() => togglePalletActive(p.id, true)}>
+                              Enable
+                            </button>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </aside>
         </div>
       </div>
-    </div>
+    </fieldset>
   );
 };
 

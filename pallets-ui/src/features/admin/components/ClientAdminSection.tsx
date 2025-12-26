@@ -1,10 +1,13 @@
 // src/features/admin/components/ClientAdminSection.tsx
 import React, { useEffect, useState } from "react";
+import "./css/ClientAdminSection.css"
+import "../AdminPage.css"
 
 //import api 
 import { API_BASE } from "../../../config/api";
 import { apiFetch } from "../../../config/apiFetch";
 
+// Types
 import type { Client } from "../../../types/domain";
 
 const emptyForm = {
@@ -19,6 +22,17 @@ type Props = {
   onClientChanged?: () => void;
 };
 
+/**
+ * ClientAdminSection
+ *
+ * Responsibilities:
+ * - Add / edit sold-to clients
+ * - Enable / disable clients
+ *
+ * Non-responsibilities:
+ * - Address management
+ * - Routing
+ */
 const ClientAdminSection: React.FC<Props> = ({ onClientChanged }) => {
 
   // ---- SHARED STATE ----
@@ -246,465 +260,296 @@ const ClientAdminSection: React.FC<Props> = ({ onClientChanged }) => {
   };
 
   return (
-    <div >
-      <h3 style={{ marginBottom: 0 }}>Sold-To Clients</h3>
-      <p style={{ marginBottom: 15, marginTop: 0 }}>
-        Select a client to manage.
-      </p>
-      <div style={{ display: "flex", gap: 24, alignItems: "center" }}>
-        {/* Left side: tabs + forms */}
-        <div style={{ flex: 1, minWidth: 320 }}>
-          {/* Sub-tabs for Add / Edit */}
-          <div style={{ marginBottom: 12, display: "flex", gap: 8 }}>
-            <button
-              type="button"
-              onClick={() => setActiveTab("add")}
-              style={{
-                padding: "6px 12px",
-                borderRadius: 4,
-                border:
-                  activeTab === "add" ? "2px solid #333" : "1px solid #ccc",
-                backgroundColor: activeTab === "add" ? "#a6d2f5" : "#486882",
-                cursor: "pointer",
-              }}
-            >
-              Add Client
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveTab("edit")}
-              style={{
-                padding: "6px 12px",
-                borderRadius: 4,
-                border:
-                  activeTab === "edit" ? "2px solid #333" : "1px solid #ccc",
-                backgroundColor: activeTab === "edit" ? "#a6d2f5" : "#486882",
-                cursor: "pointer",
-              }}
-            >
-              Edit Client
-            </button>
-          </div>
+    <fieldset className="client-section">
+      <legend>Sold-To Clients</legend>
+      <div className="client-admin">
+        <header className="client-admin-header">
+          <p>Select a client to manage.</p>
+        </header>
 
-          {activeTab === "add" ? (
-            /** LEFT SIDE ADD client */
-            <>
-              <h3>Add New Client</h3>
+        <div className="client-admin-layout">
+          {/* Left side: tabs + forms */}
+          <div className="client-admin-main">
+            {/* Sub-tabs for Add / Edit */}
+            <div className="admin-tabs client-admin-tabs">
+              <button
+                type="button"
+                onClick={() => setActiveTab("add")}
+                className={activeTab === "add" ? "active" : ""}
+              >
+                Add Client
+              </button>
 
-              {addMessage && (
-                <div style={{ marginBottom: 8, color: "green" }}>
-                  {addMessage}
-                </div>
-              )}
-              {addError && (
-                <div style={{ marginBottom: 8, color: "red" }}>
-                  {addError}
-                </div>
-              )}
-
-              <form onSubmit={handleAddSubmit}>
-                <div style={{ marginBottom: 8 }}>
-                  <label style={{ display: "block", marginBottom: 4 }}>
-                    Client Name
-                  </label>
-                  <input
-                    name="name"
-                    type="text"
-                    value={addForm.name}
-                    onChange={handleAddChange}
-                    style={{ width: "100%" }}
-                  />
-                </div>
-
-                <div style={{ marginBottom: 8 }}>
-                  <label style={{ display: "block", marginBottom: 4 }}>
-                    Address
-                  </label>
-                  <input
-                    name="address"
-                    type="text"
-                    value={addForm.address}
-                    onChange={handleAddChange}
-                    style={{ width: "100%" }}
-                  />
-                </div>
-
-                <div
-                  style={{
-                    display: "flex",
-                    gap: 8,
-                    marginBottom: 8,
-                  }}
-                >
-                  <div style={{ flex: 2 }}>
-                    <label
-                      style={{ display: "block", marginBottom: 4 }}
-                    >
-                      City
-                    </label>
-                    <input
-                      name="city"
-                      type="text"
-                      value={addForm.city}
-                      onChange={handleAddChange}
-                      style={{ width: "100%" }}
-                    />
-                  </div>
-
-                  <div style={{ flex: 1 }}>
-                    <label
-                      style={{ display: "block", marginBottom: 4 }}
-                    >
-                      Province
-                    </label>
-                    <input
-                      name="province"
-                      type="text"
-                      value={addForm.province}
-                      onChange={handleAddChange}
-                      style={{ width: "100%" }}
-                      placeholder="ON"
-                    />
-                  </div>
-
-                  <div style={{ flex: 1 }}>
-                    <label
-                      style={{ display: "block", marginBottom: 4 }}
-                    >
-                      Postal
-                    </label>
-                    <input
-                      name="postal"
-                      type="text"
-                      value={addForm.postal}
-                      onChange={handleAddChange}
-                      style={{ width: "100%" }}
-                      placeholder="L6T 1A1"
-                    />
-                  </div>
-                </div>
-
-                <button type="submit" disabled={addSubmitting}>
-                  {addSubmitting ? "Saving..." : "Add Client"}
-                </button>
-              </form>
-            </>
-          ) : (
-            /** LEFT SIDE Edit Client */
-            <>
-              <h3>Edit Existing Client</h3>
-
-              {editMessage && (
-                <div style={{ marginBottom: 8, color: "green" }}>
-                  {editMessage}
-                </div>
-              )}
-              {editError && (
-                <div style={{ marginBottom: 8, color: "red" }}>
-                  {editError}
-                </div>
-              )}
-
-              {/* Search + select client (like slip form) */}
-              <div style={{ marginBottom: 8 }}>
-                <label style={{ display: "block", marginBottom: 4 }}>
-                  Search client
-                </label>
-                <input
-                  type="text"
-                  value={editSearch}
-                  onChange={(e) => setEditSearch(e.target.value)}
-                  placeholder="Type client name..."
-                  style={{ width: "100%" }}
-                />
-              </div>
-
-              <div style={{ marginBottom: 12 }}>
-                <label style={{ display: "block", marginBottom: 4 }}>
-                  Select client
-                </label>
-                <select
-                  value={selectedEditClientId}
-                  onChange={(e) =>
-                    setSelectedEditClientId(
-                      e.target.value ? Number(e.target.value) : ""
-                    )
-                  }
-                  style={{ width: "100%" }}
-                >
-                  <option value="">-- Select --</option>
-                  {clients.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {c.name} — {c.city}, {c.province} {!c.active && showInactive ? "   (inactive)" : ""}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Form auto-filled with selected client */}
-              <form onSubmit={handleEditSubmit}>
-                <div style={{ marginBottom: 8 }}>
-                  <label style={{ display: "block", marginBottom: 4 }}>
-                    Client Name
-                  </label>
-                  <input
-                    name="name"
-                    type="text"
-                    value={editForm.name}
-                    onChange={handleEditChange}
-                    style={{ width: "100%" }}
-                    disabled={!selectedEditClientId}
-                  />
-                </div>
-
-                <div style={{ marginBottom: 8 }}>
-                  <label style={{ display: "block", marginBottom: 4 }}>
-                    Address
-                  </label>
-                  <input
-                    name="address"
-                    type="text"
-                    value={editForm.address}
-                    onChange={handleEditChange}
-                    style={{ width: "100%" }}
-                    disabled={!selectedEditClientId}
-                  />
-                </div>
-
-                <div
-                  style={{
-                    display: "flex",
-                    gap: 8,
-                    marginBottom: 8,
-                  }}
-                >
-                  <div style={{ flex: 2 }}>
-                    <label
-                      style={{ display: "block", marginBottom: 4 }}
-                    >
-                      City
-                    </label>
-                    <input
-                      name="city"
-                      type="text"
-                      value={editForm.city}
-                      onChange={handleEditChange}
-                      style={{ width: "100%" }}
-                      disabled={!selectedEditClientId}
-                    />
-                  </div>
-
-                  <div style={{ flex: 1 }}>
-                    <label
-                      style={{ display: "block", marginBottom: 4 }}
-                    >
-                      Province
-                    </label>
-                    <input
-                      name="province"
-                      type="text"
-                      value={editForm.province}
-                      onChange={handleEditChange}
-                      style={{ width: "100%" }}
-                      placeholder="ON"
-                      disabled={!selectedEditClientId}
-                    />
-                  </div>
-
-                  <div style={{ flex: 1 }}>
-                    <label
-                      style={{ display: "block", marginBottom: 4 }}
-                    >
-                      Postal
-                    </label>
-                    <input
-                      name="postal"
-                      type="text"
-                      value={editForm.postal}
-                      onChange={handleEditChange}
-                      style={{ width: "100%" }}
-                      placeholder="L6T 1A1"
-                      disabled={!selectedEditClientId}
-                    />
-                  </div>
-                </div>
-
-                <button
-                  type="submit"
-                  disabled={editSubmitting || !selectedEditClientId}
-                >
-                  {editSubmitting ? "Updating..." : "Update Client"}
-                </button>
-              </form>
-            </>
-          )}
-        </div>
-
-        {/* Right side: existing clients list with scroll */}
-        <div style={{ flex: 1, minWidth: 300 }}>
-
-          {/*Existing Clients + Checkbox */}
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-            <h3 style={{ margin: 0 }}>Existing Clients</h3>
-            <label style={{ fontSize: 14 }}>
-              <input
-                type="checkbox"
-                checked={showInactive}
-                onChange={(e) => setShowInactive(e.target.checked)}
-                style={{ marginRight: 6 }}
-              />
-              Show inactive
-            </label>
-          </div>
-
-
-          {loading ? (
-            <p>Loading clients...</p>
-          ) : clients.length === 0 ? (
-            <p>No clients found.</p>
-          ) : (
-            <div style={{ maxHeight: "200px", overflowY: "auto", border: "1px solid #ddd", borderRadius: 4, }}>
-              {/*Table header */}
-              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 14, }}>
-                <thead>
-                  <tr>
-                    <th
-                      style={{
-                        borderBottom: "1px solid #ccc",
-                        textAlign: "left",
-                        padding: "4px 2px",
-                        position: "sticky",
-                        top: 0,
-                        background: "#486882",
-                      }}
-                    >
-                      Name
-                    </th>
-
-                    <th
-                      style={{
-                        borderBottom: "1px solid #ccc",
-                        textAlign: "left",
-                        padding: "4px 2px",
-                        position: "sticky",
-                        top: 0,
-                        background: "#486882",
-                      }}
-                    >
-                      City
-                    </th>
-
-                    <th
-                      style={{
-                        borderBottom: "1px solid #ccc",
-                        textAlign: "left",
-                        padding: "4px 2px",
-                        position: "sticky",
-                        top: 0,
-                        background: "#486882",
-                      }}
-                    >
-                      Province
-                    </th>
-
-                    <th
-                      style={{
-                        borderBottom: "1px solid #ccc",
-                        textAlign: "left",
-                        padding: "4px 2px",
-                        position: "sticky",
-                        top: 0,
-                        background: "#486882",
-                      }}
-                    >
-                      Status
-                    </th>
-
-                    <th
-                      style={{
-                        borderBottom: "1px solid #ccc",
-                        textAlign: "center",
-                        padding: "4px 2px",
-                        position: "sticky",
-                        top: 0,
-                        background: "#486882",
-                      }}
-                    >
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {clients.map((c) => (
-                    <tr key={c.id} style={{ opacity: c.active ? 1 : 0.6 }}>
-                      <td
-                        style={{
-                          borderBottom: "1px solid #eee",
-                          padding: "4px 2px",
-                        }}
-                      >
-                        {c.name}
-                      </td>
-                      <td
-                        style={{
-                          borderBottom: "1px solid #eee",
-                          padding: "4px 2px",
-                        }}
-                      >
-                        {c.city}
-                      </td>
-                      <td
-                        style={{
-                          borderBottom: "1px solid #eee",
-                          padding: "4px 2px",
-                        }}
-                      >
-                        {c.province}
-                      </td>
-                      <td
-                        style={{
-                          borderBottom: "1px solid #eee",
-                          padding: "4px 2px",
-                        }}
-                      >
-                        {c.active ? "Active" : "Inactive"}
-                      </td>
-                      <td
-                        style={{
-                          borderBottom: "1px solid #eee",
-                          padding: "4px",
-                          textAlign: "right",
-                          whiteSpace: "nowrap",
-                          width: "0%"
-                        }}
-                      >
-                        {c.active ? (
-                          <button
-                            type="button"
-                            onClick={() => toggleClientActive(c.id, false)}
-                            style={{ cursor: "pointer" }}
-                          >
-                            Disable
-                          </button>
-                        ) : (
-                          <button
-                            type="button"
-                            onClick={() => toggleClientActive(c.id, true)}
-                            style={{ cursor: "pointer" }}
-                          >
-                            Enable
-                          </button>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+              <button
+                type="button"
+                onClick={() => setActiveTab("edit")}
+                className={activeTab === "edit" ? "active" : ""}
+              >
+                Edit Client
+              </button>
             </div>
-          )}
+
+            {activeTab === "add" ? (
+              /** LEFT SIDE ADD client */
+              <section className="admin-form">
+                <h4>Add New Client</h4>
+
+                {addMessage && (
+                  <div className="status success">
+                    {addMessage}
+                  </div>
+                )}
+                {addError && (
+                  <div className="status error">
+                    {addError}
+                  </div>
+                )}
+
+
+                <form onSubmit={handleAddSubmit} className="admin-form">
+                  <div className="field">
+                    <label>Client Name</label>
+                    <input
+                      name="name"
+                      type="text"
+                      value={addForm.name}
+                      onChange={handleAddChange}
+                    />
+                  </div>
+
+                  <div className="field">
+                    <label>Address</label>
+                    <input
+                      name="address"
+                      type="text"
+                      value={addForm.address}
+                      onChange={handleAddChange}
+                    />
+                  </div>
+
+                  <div className="field-grid">
+                    <div className="field">
+                      <label>City</label>
+                      <input
+                        name="city"
+                        type="text"
+                        value={addForm.city}
+                        onChange={handleAddChange}
+                      />
+                    </div>
+
+                    <div className="field">
+                      <label>Province</label>
+                      <input
+                        name="province"
+                        type="text"
+                        value={addForm.province}
+                        onChange={handleAddChange}
+                        placeholder="ON"
+                      />
+                    </div>
+
+                    <div className="field">
+                      <label>Postal</label>
+                      <input
+                        name="postal"
+                        type="text"
+                        value={addForm.postal}
+                        onChange={handleAddChange}
+                        placeholder="L6T 1A1"
+                      />
+                    </div>
+                  </div>
+
+                  <button type="submit" disabled={addSubmitting} className="add-admin-button">
+                    {addSubmitting ? "Saving..." : "Add Client"}
+                  </button>
+                </form>
+              </section>
+            ) : (
+              /** LEFT SIDE Edit Client */
+              <section className="admin-form">
+                <h4>Edit Existing Client</h4>
+
+                {editMessage && (
+                  <div className="status success">
+                    {editMessage}
+                  </div>
+                )}
+                {editError && (
+                  <div className="status error">
+                    {editError}
+                  </div>
+                )}
+
+                {/* Search + select client (like slip form) */}
+                <div className="client-admin-search">
+                  <div className="field">
+                    <label>Search client</label>
+                    <input
+                      type="text"
+                      value={editSearch}
+                      onChange={(e) => setEditSearch(e.target.value)}
+                      placeholder="Type client name..."
+                    />
+                  </div>
+
+                  <div className="field">
+                    <label>Select client</label>
+                    <select
+                      value={selectedEditClientId}
+                      onChange={(e) =>
+                        setSelectedEditClientId(
+                          e.target.value ? Number(e.target.value) : ""
+                        )
+                      }
+                    >
+                      <option value="">-- Select --</option>
+                      {clients.map((c) => (
+                        <option key={c.id} value={c.id}>
+                          {c.name} — {c.city}, {c.province} {!c.active && showInactive ? "   (inactive)" : ""}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                {/* Form auto-filled with selected client */}
+                <form onSubmit={handleEditSubmit} className="admin-form">
+                  <div className="field">
+                    <label>Client Name</label>
+                    <input
+                      name="name"
+                      type="text"
+                      value={editForm.name}
+                      onChange={handleEditChange}
+                      disabled={!selectedEditClientId}
+                    />
+                  </div>
+
+                  <div className="field">
+                    <label>Address</label>
+                    <input
+                      name="address"
+                      type="text"
+                      value={editForm.address}
+                      onChange={handleEditChange}
+                      disabled={!selectedEditClientId}
+                    />
+                  </div>
+
+                  <div className="field-grid">
+                    <div className="field">
+                      <label>City</label>
+                      <input
+                        name="city"
+                        type="text"
+                        value={editForm.city}
+                        onChange={handleEditChange}
+                        disabled={!selectedEditClientId}
+                      />
+                    </div>
+
+                    <div className="field">
+                      <label>Province</label>
+                      <input
+                        name="province"
+                        type="text"
+                        value={editForm.province}
+                        onChange={handleEditChange}
+                        placeholder="ON"
+                        disabled={!selectedEditClientId}
+                      />
+                    </div>
+
+                    <div className="field">
+                      <label>Postal</label>
+                      <input
+                        name="postal"
+                        type="text"
+                        value={editForm.postal}
+                        onChange={handleEditChange}
+                        placeholder="L6T 1A1"
+                        disabled={!selectedEditClientId}
+                      />
+                    </div>
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={editSubmitting || !selectedEditClientId}
+                    className="update-admin-button"
+                  >
+                    {editSubmitting ? "Updating..." : "Update Client"}
+                  </button>
+                </form>
+
+              </section>
+            )}
+          </div>
+
+          {/* Right side: existing clients list with scroll */}
+          <aside className="client-admin-sidebar">
+
+            {/*Existing Clients + Checkbox */}
+            <div className="client-admin-sidebar-header">
+              <h4>Existing Clients</h4>
+              <label className="show-inactive-toggle">
+                <input
+                  type="checkbox"
+                  checked={showInactive}
+                  onChange={(e) => setShowInactive(e.target.checked)}
+                />
+                Show&nbsp;inactive
+              </label>
+            </div>
+
+
+            {loading ? (
+              <p>Loading clients...</p>
+            ) : clients.length === 0 ? (
+              <p>No clients found.</p>
+            ) : (
+              <div className="client-table-wrapper">
+                {/*Table header */}
+                <table className="admin-table client-admin-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>City</th>
+                      <th>Province</th>
+                      <th>Status</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {clients.map((c) => (
+                      <tr key={c.id} className={!c.active ? "inactive" : undefined}>
+                        <td>{c.name}</td>
+                        <td>{c.city}</td>
+                        <td>{c.province}</td>
+                        <td>{c.active ? "Active" : "Inactive"}</td>
+                        <td className="actions">
+                          {c.active ? (
+                            <button type="button" onClick={() => toggleClientActive(c.id, false)}>
+                              Disable
+                            </button>
+                          ) : (
+                            <button type="button" onClick={() => toggleClientActive(c.id, true)}>
+                              Enable
+                            </button>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </aside>
         </div>
       </div>
-    </div>
+    </fieldset>
   );
 };
 

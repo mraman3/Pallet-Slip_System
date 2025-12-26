@@ -1,5 +1,6 @@
 // src/features/admin/components/ClerkAdminSection.tsx
 import React, { useEffect, useState } from "react";
+import "./css/ClerkAdminSection.css"
 
 //import api
 import { API_BASE } from "../../../config/api";
@@ -210,296 +211,188 @@ const ClerkAdminSection: React.FC = () => {
   };
 
   return (
-    <div>
-      <h3 style={{ marginBottom: 0 }}>Clerks</h3>
-      <p style={{ marginBottom: 15, marginTop: 0 }}>
-        Manage the list of clerks that can be assigned to slips.
-      </p>
+    <fieldset className="clerk-section">
+      <legend>Clerks</legend>
 
-      {/* Search field */}
-      <div style={{ marginBottom: 12 }}>
-        <label style={{ display: "block", marginBottom: 4 }}>
-          Search clerks
-        </label>
-        <input
-          type="text"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Type clerk name..."
-          style={{ width: "100%" }}
-        />
-      </div>
+      <div className="clerk-admin">
+        <header className="clerk-admin-header">
+          <p>Manage the list of clerks that can be assigned to slips.</p>
+        </header>
 
-      <div style={{ display: "flex", gap: 24, alignItems: "flex-start" }}>
-        {/* Left: tabs + forms */}
-        <div style={{ flex: 1, minWidth: 320 }}>
-          {/* Tabs */}
-          <div style={{ marginBottom: 12, display: "flex", gap: 8 }}>
-            <button
-              type="button"
-              onClick={() => setActiveTab("add")}
-              style={{
-                padding: "6px 12px",
-                borderRadius: 4,
-                border:
-                  activeTab === "add" ? "2px solid #333" : "1px solid #ccc",
-                backgroundColor: activeTab === "add" ? "#a6d2f5" : "#486882",
-                cursor: "pointer",
-              }}
-            >
-              Add Clerk
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveTab("edit")}
-              style={{
-                padding: "6px 12px",
-                borderRadius: 4,
-                border:
-                  activeTab === "edit" ? "2px solid #333" : "1px solid #ccc",
-                backgroundColor: activeTab === "edit" ? "#a6d2f5" : "#486882",
-                cursor: "pointer",
-              }}
-            >
-              Edit Clerk
-            </button>
-          </div>
-
-          {activeTab === "add" ? (
-            <section>
-              <h4>Add Clerk</h4>
-
-              {addMessage && (
-                <div style={{ marginBottom: 8, color: "green" }}>
-                  {addMessage}
-                </div>
-              )}
-              {addError && (
-                <div style={{ marginBottom: 8, color: "red" }}>
-                  {addError}
-                </div>
-              )}
-
-              <form onSubmit={handleAddSubmit}>
-                <div style={{ marginBottom: 8 }}>
-                  <label style={{ display: "block", marginBottom: 4 }}>
-                    Clerk Name
-                  </label>
-                  <input
-                    name="name"
-                    type="text"
-                    value={addForm.name}
-                    onChange={handleAddChange}
-                    style={{ width: "100%" }}
-                    placeholder="e.g. John Smith"
-                  />
-                </div>
-
-                <button type="submit" disabled={addSubmitting}>
-                  {addSubmitting ? "Saving..." : "Add Clerk"}
-                </button>
-              </form>
-            </section>
-          ) : (
-            <section>
-              <h4>Edit Clerk</h4>
-
-              {editMessage && (
-                <div style={{ marginBottom: 8, color: "green" }}>
-                  {editMessage}
-                </div>
-              )}
-              {editError && (
-                <div style={{ marginBottom: 8, color: "red" }}>
-                  {editError}
-                </div>
-              )}
-
-              <div style={{ marginBottom: 8 }}>
-                <label style={{ display: "block", marginBottom: 4 }}>
-                  Select clerk
-                </label>
-                <select
-                  value={selectedClerkId}
-                  onChange={(e) =>
-                    setSelectedClerkId(
-                      e.target.value ? Number(e.target.value) : ""
-                    )
-                  }
-                  style={{ width: "100%" }}
-                >
-                  <option value="">-- Select --</option>
-                  {clerks.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {c.name}
-                      {c.active === false ? " (inactive)" : ""}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <form onSubmit={handleEditSubmit}>
-                <div style={{ marginBottom: 8 }}>
-                  <label style={{ display: "block", marginBottom: 4 }}>
-                    Clerk Name
-                  </label>
-                  <input
-                    name="name"
-                    type="text"
-                    value={editForm.name}
-                    onChange={handleEditChange}
-                    style={{ width: "100%" }}
-                    disabled={!selectedClerkId}
-                  />
-                </div>
-
-                <button
-                  type="submit"
-                  disabled={editSubmitting || !selectedClerkId}
-                >
-                  {editSubmitting ? "Updating..." : "Update Clerk"}
-                </button>
-              </form>
-            </section>
-          )}
-        </div>
-
-        {/* Right: clerk list */}
-        <div style={{ flex: 1, minWidth: 300 }}>
-          <div style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-          }}
-          >
-            <h4>Existing Clerks</h4>
-            <label style={{ fontSize: 14 }}>
-              <input
-                type="checkbox"
-                checked={showInactive}
-                onChange={(e) => setShowInactive(e.target.checked)}
-                style={{ marginRight: 6 }}
-              />
-              Show inactive
-            </label>
-          </div>
-          {loading ? (
-            <p>Loading clerks...</p>
-          ) : clerks.length === 0 ? (
-            <p>No clerks found.</p>
-          ) : (
-            <div
-              style={{
-                maxHeight: "200px",
-                overflowY: "auto",
-                border: "1px solid #ddd",
-                borderRadius: 4,
-              }}
-            >
-              <table
-                style={{
-                  width: "100%",
-                  borderCollapse: "collapse",
-                  fontSize: 14,
-                }}
+        <div className="clerk-admin-layout">
+          {/* Left: tabs + forms */}
+          <div className="clerk-admin-main">
+            {/* Tabs */}
+            <div className="admin-tabs clerk-admin-tabs">
+              <button
+                type="button"
+                onClick={() => setActiveTab("add")}
+                className={activeTab === "add" ? "active" : ""}
               >
-                <thead>
-                  <tr>
-                    <th
-                      style={{
-                        borderBottom: "1px solid #ccc",
-                        textAlign: "left",
-                        padding: "4px 2px",
-                        position: "sticky",
-                        top: 0,
-                        background: "#486882",
-                      }}
-                    >
-                      Name
-                    </th>
-                    <th
-                      style={{
-                        borderBottom: "1px solid #ccc",
-                        textAlign: "left",
-                        padding: "4px 2px",
-                        position: "sticky",
-                        top: 0,
-                        background: "#486882",
-                      }}
-                    >
-                      Status
-                    </th>
-                    <th
-                      style={{
-                        borderBottom: "1px solid #ccc",
-                        textAlign: "center",
-                        padding: "4px 2px",
-                        position: "sticky",
-                        top: 0,
-                        background: "#486882",
-                      }}
-                    >
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {clerks.map((c) => (
-                    <tr key={c.id} style={{ opacity: c.active ? 1 : 0.6 }}>
-                      <td
-                        style={{
-                          borderBottom: "1px solid #eee",
-                          padding: "4px 2px",
-                        }}
-                      >
-                        {c.name}
-                      </td>
-
-                      <td
-                        style={{
-                          borderBottom: "1px solid #eee",
-                          padding: "4px 2px",
-                        }}
-                      >
-                        {c.active ? "Active" : "Inactive"}
-                      </td>
-
-                      <td
-                        style={{
-                          borderBottom: "1px solid #eee",
-                          padding: "4px",
-                          textAlign: "right",
-                          whiteSpace: "nowrap",
-                          width: "0%"
-                        }}
-                      >
-                        {c.active ? (
-                          <button
-                            type="button"
-                            onClick={() => toggleClerkActive(c.id, false)}
-                            style={{ cursor: "pointer" }}
-                          >
-                            Disable
-                          </button>
-                        ) : (
-                          <button
-                            type="button"
-                            onClick={() => toggleClerkActive(c.id, true)}
-                            style={{ cursor: "pointer" }}
-                          >
-                            Enable
-                          </button>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                Add Clerk
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab("edit")}
+                className={activeTab === "edit" ? "active" : ""}
+              >
+                Edit Clerk
+              </button>
             </div>
-          )}
+
+            {/* Search */}
+            <div className="field">
+              <label>Search clerks</label>
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Type clerk name..."
+              />
+            </div>
+
+            {activeTab === "add" ? (
+              <section className="admin-form">
+                <h4>Add Clerk</h4>
+
+                {addMessage && <div className="status success">{addMessage}</div>}
+                {addError && <div className="status error">{addError}</div>}
+
+                <form onSubmit={handleAddSubmit} className="admin-form">
+                  <div className="field">
+                    <label>Clerk Name</label>
+                    <input
+                      name="name"
+                      type="text"
+                      value={addForm.name}
+                      onChange={handleAddChange}
+                      placeholder="e.g. John Smith"
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={addSubmitting}
+                    className="add-admin-button"
+                  >
+                    {addSubmitting ? "Saving..." : "Add Clerk"}
+                  </button>
+                </form>
+              </section>
+            ) : (
+              <section className="admin-form">
+                <h4>Edit Clerk</h4>
+
+                {editMessage && <div className="status success">{editMessage}</div>}
+                {editError && <div className="status error">{editError}</div>}
+
+                <div className="field">
+                  <label>Select clerk</label>
+                  <select
+                    value={selectedClerkId}
+                    onChange={(e) =>
+                      setSelectedClerkId(
+                        e.target.value ? Number(e.target.value) : ""
+                      )
+                    }
+                  >
+                    <option value="">-- Select --</option>
+                    {clerks.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.name}
+                        {c.active === false ? " (inactive)" : ""}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <form onSubmit={handleEditSubmit} className="admin-form">
+                  <div className="field">
+                    <label>Clerk Name</label>
+                    <input
+                      name="name"
+                      type="text"
+                      value={editForm.name}
+                      onChange={handleEditChange}
+                      disabled={!selectedClerkId}
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={editSubmitting || !selectedClerkId}
+                    className="update-admin-button"
+                  >
+                    {editSubmitting ? "Updating..." : "Update Clerk"}
+                  </button>
+                </form>
+              </section>
+            )}
+          </div>
+
+          {/* Right: clerk list */}
+          <aside className="clerk-admin-sidebar">
+            <div className="clerk-admin-sidebar-header">
+              <h4>Existing Clerks</h4>
+              <label className="show-inactive-toggle">
+                <input
+                  type="checkbox"
+                  checked={showInactive}
+                  onChange={(e) => setShowInactive(e.target.checked)}
+                />
+                Show&nbsp;inactive
+              </label>
+            </div>
+
+            {loading ? (
+              <p>Loading clerks...</p>
+            ) : clerks.length === 0 ? (
+              <p>No clerks found.</p>
+            ) : (
+              <div className="clerk-table-wrapper">
+                <table className="admin-table clerk-admin-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Status</th>
+                      <th className="actions">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {clerks.map((c) => (
+                      <tr
+                        key={c.id}
+                        className={!c.active ? "inactive" : undefined}
+                      >
+                        <td>{c.name}</td>
+                        <td>{c.active ? "Active" : "Inactive"}</td>
+                        <td className="actions">
+                          {c.active ? (
+                            <button
+                              type="button"
+                              onClick={() => toggleClerkActive(c.id, false)}
+                            >
+                              Disable
+                            </button>
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={() => toggleClerkActive(c.id, true)}
+                            >
+                              Enable
+                            </button>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </aside>
         </div>
       </div>
-    </div>
+    </fieldset>
   );
 };
 
