@@ -131,6 +131,7 @@ const SlipFilters: React.FC<Props> = ({
         <div className="slip-search-field">
           <label>Slip #</label>
           <input
+          placeholder="Slip # e.g. (74741)"
             value={slipNumber}
             onChange={(e) => setSlipNumber(e.target.value)}
           />
@@ -147,7 +148,7 @@ const SlipFilters: React.FC<Props> = ({
 
         {/* Client search */}
         <div className="slip-search-field">
-          <label>Client</label>
+          <label>Client Search</label>
           <input
             placeholder="Search client..."
             value={clientSearch}
@@ -179,47 +180,51 @@ const SlipFilters: React.FC<Props> = ({
               ))}
           </select>
         </div>
-
-        {/* Address search */}
-        <div className="slip-search-field">
-          <label>Ship To Search</label>
-          <input
-            placeholder="Search address..."
-            value={addressSearch}
-            onChange={(e) => setAddressSearch(e.target.value)}
-          />
         </div>
+        <div className="slip-search-field-row">
+          {/* Address search */}
+          <div className="slip-search-field">
+            <label>Ship To Search</label>
+            <input
+              placeholder="Search address..."
+              value={addressSearch}
+              onChange={(e) => setAddressSearch(e.target.value)}
+            />
+          </div>
 
-        {/* Address selector */}
-        <div className="slip-search-field">
-          <label>Select Ship To</label>
-          <select
-            value={selectedAddressId}
-            onChange={(e) =>
-              setSelectedAddressId(e.target.value ? Number(e.target.value) : "")
-            }
-          >
-            <option value="">-- Any --</option>
-            {addressResults
-              .slice()
-              .sort((a, b) =>
-                a.active !== b.active
-                  ? a.active ? -1 : 1
-                  : (a.location_name || "").localeCompare(b.location_name || "")
-              )
-              .map((a) => (
-                <option key={a.id} value={a.id}>
-                  {a.location_name} — {a.city}
-                  {!a.active ? " (inactive)" : ""}
-                </option>
-              ))}
-          </select>
-        </div>
+          {/* Address selector */}
+          <div className="slip-search-field">
+            <label>Select Ship To</label>
+            <select
+              value={selectedAddressId}
+              onChange={(e) =>
+                setSelectedAddressId(e.target.value ? Number(e.target.value) : "")
+              }
+            >
+              <option value="">-- Any --</option>
+              {addressResults
+                .slice()
+                .sort((a, b) =>
+                  a.active !== b.active
+                    ? a.active ? -1 : 1
+                    : (a.location_name || "").localeCompare(b.location_name || "")
+                )
+                .map((a) => (
+                  <option key={a.id} value={a.id}>
+                    {a.location_name} — {a.city}
+                    {!a.active ? " (inactive)" : ""}
+                  </option>
+                ))}
+            </select>
+          </div>
+        
+
 
         {/* Pallet type search */}
         <div className="slip-search-field">
           <label>Pallet Type Search</label>
           <input
+          placeholder="Search Pallet..."
             value={palletTypeSearch}
             onChange={(e) => setPalletTypeSearch(e.target.value)}
           />
@@ -254,7 +259,10 @@ const SlipFilters: React.FC<Props> = ({
               ))}
           </select>
         </div>
+        </div>
+      
 
+      <div className="slip-search-field-row">
         {/* Shipped via */}
         <div className="slip-search-field">
           <label>Shipped Via</label>
@@ -300,6 +308,7 @@ const SlipFilters: React.FC<Props> = ({
             type="date"
             value={fromDate}
             onChange={(e) => setFromDate(e.target.value)}
+            className="slip-search-date"
           />
         </div>
 
@@ -309,6 +318,7 @@ const SlipFilters: React.FC<Props> = ({
             type="date"
             value={toDate}
             onChange={(e) => setToDate(e.target.value)}
+            className="slip-search-date"
           />
         </div>
 

@@ -22,63 +22,6 @@
 }
 
 /* =========================
-   Filters (admin-form equivalent)
-   ========================= */
-.slip-search-filters {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin-bottom: 24px;
-}
-
-.slip-search-field {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.slip-search-field label {
-  font-size: 13px;
-  font-weight: 500;
-  color: #374151;
-}
-
-/* Inputs / selects */
-.slip-search-field input,
-.slip-search-field select {
-  width: 100%;
-  padding: 8px 10px;
-  font-size: 14px;
-  border-radius: 4px;
-  border: 1px solid #cbd5e1;
-  background: #ffffff;
-  color: #1f2933;
-}
-
-.slip-search-field input:focus,
-.slip-search-field select:focus {
-  outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.4);
-}
-
-.slip-search-field input:disabled,
-.slip-search-field select:disabled {
-  background: #f1f5f9;
-  cursor: not-allowed;
-}
-
-/* Row of grouped filters */
-.slip-search-field-row {
-  display: flex;
-  gap: 8px;
-}
-
-.slip-search-field-row > .slip-search-field {
-  flex: 1;
-}
-
-/* =========================
    Status messages
    ========================= */
 .slip-search-status {
@@ -176,12 +119,6 @@
 /* =========================
    Responsive
    ========================= */
-@media (max-width: 700px) {
-  .slip-search-field-row {
-    flex-direction: column;
-  }
-}
-
 @media (max-width: 500px) {
   .slip-search-table {
     font-size: 12px;

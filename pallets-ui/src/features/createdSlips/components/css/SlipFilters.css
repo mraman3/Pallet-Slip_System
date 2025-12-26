@@ -1,101 +1,124 @@
 /* =========================
    Slip Filters – Base
    ========================= */
-.slip-search-filters fieldset{
-  border: 1px solid #adb3c3;
-  border-radius: 6px;
-  padding: 12px 16px;
-  margin-bottom: 24px;
+.slip-search-filters fieldset {
+    border: 1px solid #adb3c3;
+    border-radius: 6px;
+    padding: 12px 16px;
+    margin-bottom: 24px;
 }
 
 .slip-search-filters legend {
-  padding: 0 6px;
-  font-size: 16px;
-  font-weight: 600;
-  color: #111827;
+    padding: 0 6px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #111827;
 }
 
 /* =========================
    Layout
    ========================= */
 .slip-search-field-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.slip-search-field-row > .slip-search-field {
+    flex: 1;
 }
 
 /* =========================
    Fields
    ========================= */
 .slip-search-field {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  min-width: 180px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 180px;
 }
 
 .slip-search-field label {
-  font-size: 13px;
-  font-weight: 500;
-  color: #374151;
+    font-size: 13px;
+    font-weight: 500;
+    color: #374151;
 }
 
 /* Inputs / selects */
 .slip-search-field input,
 .slip-search-field select {
-  width: 100%;
-  padding: 8px 10px;
-  font-size: 14px;
-  border-radius: 4px;
-  border: 1px solid #cbd5e1;
-  background: #ffffff;
-  color: #1f2933;
+    width: 100%;
+    padding: 8px 10px;
+    font-size: 14px;
+    border-radius: 4px;
+    border: 1px solid #cbd5e1;
+    background: #ffffff;
+    color: #1f2933;
 }
 
 .slip-search-field input:focus,
 .slip-search-field select:focus {
-  outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.4);
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.4);
 }
 
 .slip-search-field input:disabled,
 .slip-search-field select:disabled {
-  background: #f1f5f9;
-  cursor: not-allowed;
+    background: #f1f5f9;
+    cursor: not-allowed;
+}
+
+/* =========================
+   iOS / Safari overrides
+   ========================= */
+.slip-search-field input[type="date"] {
+    -webkit-appearance: none;
+    appearance: none;
+    font-size: 14px;   /* match other inputs */
+    min-height: 34px;  /* matches normal input height */
+    padding: 8px 10px;
+}
+
+/* iOS / touch Safari zoom prevention */
+@supports (-webkit-touch-callout: none) {
+    .slip-search-field input[type="date"] {
+        font-size: 16px;
+        min-height: 40px;
+    }
 }
 
 /* =========================
    Search action
    ========================= */
 .slip-search-action {
-  align-self: flex-end;
+    align-self: flex-end;
 }
 
 .slip-search-action button {
-  padding: 6px 12px;
-  font-size: 13px;
-  border-radius: 4px;
-  border: 1px solid #cbd5e1;
-  background: #2563eb;
-  cursor: pointer;
-  color: #ffffff;
+    padding: 6px 12px;
+    font-size: 13px;
+    border-radius: 4px;
+    border: 1px solid #cbd5e1;
+    background: #2563eb;
+    cursor: pointer;
+    color: #ffffff;
 }
 
 .slip-search-action button:hover {
-  background: #1d4ed8;
+    background: #1d4ed8;
 }
 
 .slip-search-action button:disabled {
-  background: #94a3b8;
-  cursor: not-allowed;
+    background: #94a3b8;
+    cursor: not-allowed;
 }
 
 /* =========================
    Responsive
    ========================= */
 @media (max-width: 700px) {
-  .slip-search-field {
-    min-width: 100%;
-  }
+    .slip-search-field {
+        min-width: 100%;
+    }
 }
