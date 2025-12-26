@@ -44,6 +44,9 @@ const SlipSearchPage: React.FC = () => {
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
 
+  // Controls filter show and hide 
+  const [showFilters, setShowFilters] = useState(true);
+
   // Entity selectors
   const [selectedClientId, setSelectedClientId] = useState<number | "">("");
   const [selectedAddressId, setSelectedAddressId] = useState<number | "">("");
@@ -219,14 +222,22 @@ const SlipSearchPage: React.FC = () => {
   // -------------------------
   return (
     <div className="slip-search">
-      <header className="slip-search-header">
-        <h3>Find / Recent Slips</h3>
-        <p>Search, filter, and edit previously created slips.</p>
-      </header>
+      <div className="slip-search-header">
+        <h2>Find / Recent Slips</h2>
+
+        <button
+          type="button"
+          className="slip-search-toggle-filters"
+          onClick={() => setShowFilters((v) => !v)}
+        >
+          {showFilters ? "Hide Filters" : "Show Filters"}
+        </button>
+      </div>
 
       {/* Filter controls */}
       <section className="slip-search-filters">
-        <SlipFilters
+
+        {showFilters && (<SlipFilters
           slipNumber={slipNumber}
           customerOrder={customerOrder}
           shippedVia={shippedVia}
@@ -265,6 +276,7 @@ const SlipSearchPage: React.FC = () => {
           onSearch={fetchSlips}
           loading={loading}
         />
+        )}
       </section>
 
       {/* Results / status */}

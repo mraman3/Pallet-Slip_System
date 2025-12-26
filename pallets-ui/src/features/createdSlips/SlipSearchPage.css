@@ -8,6 +8,10 @@
 /* =========================
    Header
    ========================= */
+.slip-search-header{
+  
+}
+
 .slip-search-header h3 {
   margin: 0;
   font-size: 20px;
@@ -19,6 +23,24 @@
   margin: 4px 0 16px;
   font-size: 14px;
   color: #475569;
+}
+
+/* =========================
+   Filter toggle
+   ========================= */
+.slip-search-toggle-filters {
+  margin-top: 8px;
+  padding: 6px 12px;
+  font-size: 13px;
+  border-radius: 4px;
+  border: 1px solid #cbd5e1;
+  background: #f8fafc;
+  cursor: pointer;
+}
+
+.slip-search-toggle-filters:hover {
+  background: #e6f0ff;
+  border-color: #3b82f6;
 }
 
 /* =========================
