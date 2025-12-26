@@ -68,7 +68,7 @@
 .show-inactive-toggle {
     display: flex;
     align-items: center;
-    font-size: 16px;
+    font-size: 13px;
     font-weight: 500;
     color: #374151;
     cursor: pointer;
@@ -77,6 +77,9 @@
 
 .show-inactive-toggle input {
     cursor: pointer;
+    width: 13px;
+    height: 13px;
+    padding: 0;
 }
 
 
